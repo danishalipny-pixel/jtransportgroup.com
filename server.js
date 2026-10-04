@@ -96,7 +96,7 @@ function blockedPath(urlPath) {
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
 export function createApp(options = {}) {
-  const dbFile = options.dbPath || process.env.DATABASE_PATH || path.join(here, "data", "mlt.db");
+ const dbFile = options.dbPath || process.env.DATABASE_PATH || "/tmp/mlt.db";
   const db = openDatabase(dbFile);
   const app = express();
 
