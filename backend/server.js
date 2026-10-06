@@ -231,20 +231,31 @@ export function createApp(options = {}) {
 
   app.use(express.json());
 
-  // CORS middleware for production API flexibility
+  // CORS middleware for production API flexibility & security
+  const allowedOrigins = new Set([
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+  ]);
+
   app.use((req, res, next) => {
     const origin = req.headers.origin;
     if (origin) {
-      res.setHeader("Access-Control-Allow-Origin", origin);
-      res.setHeader("Access-Control-Allow-Credentials", "true");
-      res.setHeader(
-        "Access-Control-Allow-Headers",
-        "Content-Type, Authorization, Cookie"
-      );
-      res.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET, POST, PUT, DELETE, OPTIONS"
-      );
+      const base = appBaseUrl();
+      const isAllowed = allowedOrigins.has(origin) || origin === base || origin.endsWith(".deplexo.app");
+      if (isAllowed) {
+        res.setHeader("Access-Control-Allow-Origin", origin);
+        res.setHeader("Access-Control-Allow-Credentials", "true");
+        res.setHeader(
+          "Access-Control-Allow-Headers",
+          "Content-Type, Authorization, Cookie"
+        );
+        res.setHeader(
+          "Access-Control-Allow-Methods",
+          "GET, POST, PUT, DELETE, OPTIONS"
+        );
+      }
     }
     if (req.method === "OPTIONS") {
       res.sendStatus(204);
