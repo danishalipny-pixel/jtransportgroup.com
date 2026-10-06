@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Payment Cancelled | J Transport Group LTD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<header class="site-header"><div class="nav-shell">
+  <a class="brand" href="index.html"><img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD"></a>
+  <a class="header-phone" href="tel:+442039962897">+44 20 3996 2897</a>
+  
+</div></header>
+<main>
+  <section class="booking-section standalone-booking">
+    <div class="booking-card">
+      <span class="section-kicker">J TRANSPORT GROUP LTD</span>
+      <h2>Payment cancelled</h2>
+      <p id="cancel-copy">No money was charged. You can search fares again whenever you are ready.</p>
+      <a class="search-button" href="booking.html">Back to booking</a>
+    </div>
+  </section>
+</main>
+<script src="assets/js/api.js"></script>
+<script>
+  const params = new URLSearchParams(location.search);
+  const reference = params.get('booking');
+  const token = params.get('token');
+  if (reference && token) {
+    api('/api/bookings/' + encodeURIComponent(reference) + '/cancel', { method: 'POST', body: { token } })
+      .then(trip => {
+        document.querySelector('#cancel-copy').textContent = trip.reference + ' is marked ' + trip.status.replaceAll('_', ' ') + '. No money was taken.';
+      })
+      .catch(error => {
+        document.querySelector('#cancel-copy').textContent = error.message;
+      });
+  }
+</script>
+</body>
+</html>

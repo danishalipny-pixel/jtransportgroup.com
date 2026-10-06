@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Account &amp; Trips | J Transport Group LTD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-shell">
+    <a class="brand" href="index.html" aria-label="J Transport Group LTD home">
+      <img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD">
+    </a>
+    <a class="header-phone" href="tel:+442039962897"><i class="bi bi-telephone-fill"></i> +44 20 3996 2897</a>
+    <a class="signin" href="account.html">Sign In</a>
+    <button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="mobile-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="booking.html">Book</a><a href="account.html">Account</a></nav>
+  </div>
+</header>
+<main>
+  <section class="booking-section standalone-booking">
+    <div class="booking-card" id="auth-card">
+      <div class="booking-heading">
+        <div><span class="section-kicker">J TRANSPORT GROUP LTD</span><h2>Sign in <em>or register</em></h2></div>
+      </div>
+      <div class="auth-switch">
+        <button type="button" id="show-login" class="active">Sign in</button>
+        <button type="button" id="show-register">Create account</button>
+      </div>
+      <form id="login-form" class="booking-form checkout-form">
+        <div class="field"><label for="login-email">Email</label><div><i class="bi bi-envelope"></i><input id="login-email" type="email" required placeholder="email@example.com"></div></div>
+        <div class="field"><label for="login-password">Password</label><div><i class="bi bi-lock"></i><input id="login-password" type="password" required minlength="8" placeholder="••••••••"></div></div>
+        <button class="search-button" type="submit">Sign in</button>
+      </form>
+      <form id="register-form" class="booking-form checkout-form" hidden>
+        <div class="field"><label for="reg-name">Full name</label><div><i class="bi bi-person"></i><input id="reg-name" required placeholder="Your full name"></div></div>
+        <div class="field"><label for="reg-email">Email</label><div><i class="bi bi-envelope"></i><input id="reg-email" type="email" required placeholder="email@example.com"></div></div>
+        <div class="field"><label for="reg-phone">Phone</label><div><i class="bi bi-telephone"></i><input id="reg-phone" type="tel" required placeholder="+44 7000 000000"></div></div>
+        <div class="field"><label for="reg-password">Password</label><div><i class="bi bi-lock"></i><input id="reg-password" type="password" required minlength="8" placeholder="At least 8 characters"></div></div>
+        <button class="search-button" type="submit">Create account</button>
+      </form>
+      <p class="form-message" id="auth-message" aria-live="polite"></p>
+    </div>
+    <div class="booking-card" id="trips-card" hidden>
+      <div class="booking-heading">
+        <div><span class="section-kicker">J TRANSPORT GROUP LTD</span><h2 id="hello">My trips</h2></div>
+        <button type="button" id="logout" class="search-button">Sign out</button>
+      </div>
+      <div id="trip-list" class="trip-list"></div>
+    </div>
+  </section>
+</main>
+<script src="assets/js/script.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/account.js"></script>
+</body>
+</html>

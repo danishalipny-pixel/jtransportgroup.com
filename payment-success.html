@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Booking Confirmed | J Transport Group LTD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<header class="site-header"><div class="nav-shell">
+  <a class="brand" href="index.html"><img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD"></a>
+  <a class="header-phone" href="tel:+442039962897">+44 20 3996 2897</a>
+</div></header>
+<main>
+  <section class="booking-section standalone-booking">
+    <div class="booking-card">
+      <span class="section-kicker">J TRANSPORT GROUP LTD</span>
+      <h2 id="pay-title">Booking Confirmation</h2>
+      <div id="pay-body" class="trip-summary"></div>
+      <a class="search-button" href="index.html">Book Another Transfer</a>
+    
+      <div class="review-success-box" style="margin-top:24px;padding:22px;background:#fffdf5;border:1.5px solid #ebd46d;border-radius:12px;text-align:center;">
+        <h3 style="font-size:19px;font-weight:700;margin-bottom:6px;color:#1a1a18;">Thank you for choosing J Transport.</h3>
+        <p style="font-size:13.5px;color:#555;margin-bottom:16px;">Happy with our service? We'd love to hear from you.</p>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:320px;margin:0 auto;">
+          <a href="https://g.page/r/CeiPQzjIIFDsECE/review" target="_blank" rel="noopener noreferrer" class="yellow-pill" style="font-size:13px;padding:11px 22px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;">⭐ Leave a Google Review <i class="bi bi-box-arrow-up-right"></i></a>
+          <a href="https://www.facebook.com/share/1FKnQNM6Cb/" target="_blank" rel="noopener noreferrer" class="yellow-pill" style="font-size:13px;padding:11px 22px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#1877f2;color:#ffffff;border-color:#1877f2;"><i class="bi bi-facebook" style="font-size:15px;"></i> ⭐ Leave us a Facebook Review <i class="bi bi-box-arrow-up-right"></i></a>
+          <a href="https://www.instagram.com/jtransportgroupltd?utm_source=qr&stkn=MW9oOGcxOXc4bnJlbA==" target="_blank" rel="noopener noreferrer" class="yellow-pill" style="font-size:13px;padding:11px 22px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#ffffff;border-color:transparent;"><i class="bi bi-instagram" style="font-size:15px;"></i> 📸 Follow us on Instagram <i class="bi bi-box-arrow-up-right"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+<script src="assets/js/script.js"></script>
+<script src="assets/js/api.js"></script>
+<script>
+  const params = new URLSearchParams(location.search);
+  const sessionId = params.get('session_id');
+  const bookingRef = params.get('booking');
+  const method = params.get('method');
+  const title = document.querySelector('#pay-title');
+  const body = document.querySelector('#pay-body');
+
+  const pounds = pence => '£' + (Number(pence || 0) / 100).toFixed(2);
+
+  if (bookingRef && method === 'cash') {
+    title.textContent = 'Request Received — Payment Pending';
+    api('/api/bookings/' + encodeURIComponent(bookingRef)).then(trip => {
+      body.replaceChildren();
+      const line1 = document.createElement('p');
+      line1.style.fontWeight = 'bold';
+      line1.style.color = '#856404';
+      line1.style.fontSize = '15px';
+      line1.textContent = 'Reference: ' + trip.reference + ' · Status: Payment Pending';
+
+      const line2 = document.createElement('p');
+      line2.style.fontSize = '14px';
+      line2.style.color = '#333';
+      line2.style.marginTop = '6px';
+      line2.textContent = trip.pickup + ' → ' + trip.dropoff + ' (' + trip.vehicle + ')';
+
+      const line3 = document.createElement('p');
+      line3.style.fontSize = '18px';
+      line3.style.color = '#b08d00';
+      line3.style.fontWeight = '700';
+      line3.style.marginTop = '8px';
+      line3.textContent = 'Total Fare: ' + pounds(trip.amountPence);
+
+      const notice = document.createElement('p');
+      notice.style.fontSize = '13.5px';
+      notice.style.lineHeight = '1.6';
+      notice.style.marginTop = '14px';
+      notice.style.padding = '12px 16px';
+      notice.style.background = '#fff8e6';
+      notice.style.border = '1px solid #ffe58f';
+      notice.style.borderRadius = '8px';
+      notice.style.color = '#856404';
+      notice.style.fontWeight = '600';
+      notice.textContent = 'Payment is required before this booking can be confirmed. Our team will contact you regarding payment.';
+
+      body.append(line1, line2, line3, notice);
+
+      if (trip.requestEmailSent || trip.emailSent) {
+        const line4 = document.createElement('p');
+        line4.style.fontSize = '12.5px';
+        line4.style.marginTop = '10px';
+        line4.style.color = '#555';
+        line4.textContent = '✓ Booking request acknowledgement email sent to passenger (' + trip.email + ') and company management.';
+        body.append(line4);
+      }
+    }).catch(() => {
+      body.textContent = 'Reference: ' + bookingRef + ' · Payment is required before this booking can be confirmed. Our team will contact you regarding payment.';
+    });
+  } else if (!sessionId) {
+    title.textContent = 'No payment to confirm';
+    body.textContent = 'Return to booking search to price and select your transfer.';
+  } else {
+    api('/api/payments/confirm?session_id=' + encodeURIComponent(sessionId)).then(trip => {
+      body.replaceChildren();
+      if (trip.status === 'paid') title.textContent = 'Booking Confirmed & Payment Received';
+      else if (trip.status === 'processing') title.textContent = 'Payment is Processing';
+      else if (trip.status === 'failed') title.textContent = 'Payment Failed';
+      else if (trip.status === 'cancelled') title.textContent = 'Payment Cancelled';
+      else title.textContent = 'Payment Pending';
+
+      const line1 = document.createElement('p');
+      line1.style.fontWeight = '700';
+      line1.style.fontSize = '15px';
+      line1.textContent = 'Reference: ' + trip.reference + ' · ' + trip.pickup + ' → ' + trip.dropoff;
+
+      const line2 = document.createElement('p');
+      line2.style.fontSize = '16px';
+      line2.style.fontWeight = '700';
+      line2.style.color = '#b08d00';
+      line2.textContent = 'Total Fare: ' + pounds(trip.amountPence) + ' · Vehicle: ' + trip.vehicle;
+
+      const notice = document.createElement('p');
+      notice.style.fontSize = '13.5px';
+      notice.style.lineHeight = '1.6';
+      notice.style.marginTop = '12px';
+
+      if (trip.status === 'paid') {
+        notice.style.color = '#28a745';
+        notice.style.fontWeight = '600';
+        notice.textContent = '✓ Confirmation email & payment receipt have been sent to passenger (' + trip.email + ') and company management.';
+      } else if (trip.status === 'processing') {
+        notice.style.color = '#856404';
+        notice.textContent = 'Your payment is still being processed. Your booking will be confirmed once payment is successfully verified.';
+      } else if (trip.status === 'failed') {
+        notice.style.color = '#721c24';
+        notice.textContent = 'Payment could not be completed. No booking has been confirmed.';
+      } else if (trip.status === 'cancelled') {
+        notice.style.color = '#721c24';
+        notice.textContent = 'Payment was cancelled. No booking has been confirmed.';
+      } else {
+        notice.style.color = '#856404';
+        notice.textContent = 'Your request has been received. Payment is pending and the booking is not confirmed yet.';
+      }
+
+      body.append(line1, line2, notice);
+    }).catch(error => {
+      title.textContent = 'We could not confirm the payment';
+      body.textContent = error.message || 'Something went wrong. Please try again or contact J Transport Group Ltd.';
+    });
+  }
+</script>
+</body>
+</html>

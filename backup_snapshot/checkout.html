@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Checkout | J Transport Group LTD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-shell">
+    <a class="brand" href="index.html" aria-label="J Transport Group LTD home">
+      <img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD">
+    </a>
+    <a class="header-phone" href="tel:+442039962897"><i class="bi bi-telephone-fill"></i> +44 20 3996 2897</a>
+    <a class="signin" href="account.html">Sign In</a>
+    <button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="mobile-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="booking.html">Book</a><a href="account.html">Account</a></nav>
+  </div>
+</header>
+
+<main>
+  <section class="booking-section standalone-booking">
+    <div class="booking-card">
+      <div class="booking-heading">
+        <div>
+          <span class="section-kicker">J TRANSPORT GROUP LTD · SECURE CHECKOUT</span>
+          <h2>Confirm Your <em>Transfer Reservation</em></h2>
+        </div>
+        <span class="secure"><i class="bi bi-shield-check"></i> Safe &amp; Encrypted via Stripe</span>
+      </div>
+      <div id="trip-summary" class="trip-summary">Loading your quote details…</div>
+      <form id="checkout-form" class="booking-form checkout-form" hidden>
+        <div class="field"><label for="name">Full name</label><div><i class="bi bi-person"></i><input id="name" name="name" required autocomplete="name" placeholder="Your full name"></div></div>
+        <div class="field"><label for="email">Email address</label><div><i class="bi bi-envelope"></i><input id="email" name="email" type="email" required autocomplete="email" placeholder="email@example.com"></div></div>
+        <div class="field"><label for="phone">Phone number</label><div><i class="bi bi-telephone"></i><input id="phone" name="phone" type="tel" required autocomplete="tel" placeholder="+44 7000 000000"></div></div>
+        <div class="field"><label for="flight">Flight number (optional)</label><div><i class="bi bi-airplane"></i><input id="flight" name="flight" autocomplete="off" placeholder="e.g. BA123 or VS45"></div></div>
+        <div class="field"><label for="notes">Special instructions (optional)</label><div><i class="bi bi-chat-left-text"></i><input id="notes" name="notes" autocomplete="off" placeholder="Child seats, extra luggage, meet & greet details"></div></div>
+        <div class="field payment-method-box" style="margin:24px 0;background:#ffffff;border:2px solid #d0ab00;padding:20px;border-radius:12px;box-shadow:0 4px 15px rgba(208,171,0,0.12);">
+          <label style="font-weight:700;color:#1a1a18;display:block;margin-bottom:12px;font-size:15px;">
+            <i class="bi bi-wallet2" style="color:#d0ab00;margin-right:6px;"></i> Select Payment Option:
+          </label>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:14px;">
+            <label class="pay-option-card" style="display:flex;align-items:center;gap:12px;cursor:pointer;background:#fffdf2;padding:14px;border-radius:10px;border:2px solid #d0ab00;font-weight:600;color:#1a1a18;">
+              <input type="radio" name="paymentMethod" value="card" checked style="accent-color:#d0ab00;width:20px;height:20px;">
+              <div>
+                <div style="font-size:14px;font-weight:700;"><i class="bi bi-credit-card-fill" style="color:#b08d00;"></i> Pay Online by Card</div>
+                <div style="font-size:11.5px;color:#666;font-weight:400;">Instant &amp; Safe via Stripe Encrypted</div>
+              </div>
+            </label>
+            <label class="pay-option-card" style="display:flex;align-items:center;gap:12px;cursor:pointer;background:#f8f9fa;padding:14px;border-radius:10px;border:2px solid #ccc;font-weight:600;color:#1a1a18;">
+              <input type="radio" name="paymentMethod" value="cash" style="accent-color:#d0ab00;width:20px;height:20px;">
+              <div>
+                <div style="font-size:14px;font-weight:700;"><i class="bi bi-cash-stack" style="color:#28a745;"></i> Pay Cash in Car</div>
+                <div style="font-size:11.5px;color:#666;font-weight:400;">Pay directly to your driver upon arrival</div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="field terms-agree-field" style="display:flex;align-items:flex-start;gap:10px;margin:16px 0;">
+          <input type="checkbox" id="terms-agree" name="termsAgree" required style="width:18px;height:18px;margin-top:2px;accent-color:#d0ab00;">
+          <label for="terms-agree" style="font-size:11.5px;color:#444;line-height:1.5;">I have read and agree to the <a href="terms.html" target="_blank" style="color:#b08d00;font-weight:600;text-decoration:underline;">J Transport Group Ltd Passenger Terms &amp; Conditions</a> (Cancellations, Child Seats £10, Waiting Time &amp; Safety Policies).</label>
+        </div>
+        <button class="search-button" id="submit-booking-btn" type="submit">Pay Securely Now <i class="bi bi-lock-fill"></i></button>
+        <p class="form-message" id="checkout-message" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-main">
+    <div class="footer-brand">
+      <a class="brand brand-footer" href="index.html"><img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD"></a>
+      <p>J Transport Group LTD provides 24/7 first-class airport transfer and chauffeur services across London and surrounding UK side areas.</p>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <a href="services.html">Services</a>
+      <a href="blogs.html">Blogs &amp; Guides</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+    </div>
+    <div>
+      <h4>Reviews &amp; Ratings</h4>
+      <a href="https://g.page/r/CeiPQzjIIFDsECE/review" target="_blank" rel="noopener noreferrer"><i class="bi bi-google"></i> ⭐ Review us on Google</a>
+    </div>
+    <div>
+      <h4>Contact Details</h4>
+      <a href="tel:+442039962897"><i class="bi bi-telephone"></i> +44 20 3996 2897</a>
+      <a href="mailto:jtransportgroup.ltd@gmail.com"><i class="bi bi-envelope"></i> jtransportgroup.ltd@gmail.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 J Transport Group LTD. All rights reserved. · <a href="terms.html" style="color:#f6c400;text-decoration:underline;">Terms &amp; Conditions</a></span>
+    <div class="license-box">
+      <strong>Transport for London (TfL) Licensed Operator</strong><br>
+      Licence Holder: <b>J TRANSPORT GROUP LTD</b> · Licence Number: <b>01103601</b><br>
+      Trading at: Office 3.40, 6-9 The Square, Stockley Park, UB11 1FW<br>
+      Trading as: FCHW Chauffeur Services · Valid: 24 September 2024 to 23 September 2029
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/script.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/checkout.js"></script>
+</body>
+</html>

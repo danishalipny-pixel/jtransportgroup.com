@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Checkout | J Transport Group LTD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-shell">
+    <a class="brand" href="index.html" aria-label="J Transport Group LTD home">
+      <img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD">
+    </a>
+    <a class="header-phone" href="tel:+442039962897"><i class="bi bi-telephone-fill"></i> +44 20 3996 2897</a>
+    
+    <button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="mobile-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="booking.html">Book</a></nav>
+  </div>
+</header>
+
+<main>
+  <section class="booking-section standalone-booking">
+    <div class="booking-card">
+      <div class="booking-heading">
+        <div>
+          <span class="section-kicker">J TRANSPORT GROUP LTD · SECURE CHECKOUT</span>
+          <h2>Confirm Your <em>Transfer Reservation</em></h2>
+        </div>
+        <span class="secure"><i class="bi bi-shield-check"></i> Safe &amp; Encrypted via Stripe</span>
+      </div>
+      <div id="trip-summary" class="trip-summary">Loading your quote details…</div>
+      <form id="checkout-form" class="booking-form checkout-form" hidden>
+        <div class="field"><label for="name">Full name</label><div><i class="bi bi-person"></i><input id="name" name="name" required autocomplete="name" placeholder="Your full name"></div></div>
+        <div class="field"><label for="email">Email address</label><div><i class="bi bi-envelope"></i><input id="email" name="email" type="email" required autocomplete="email" placeholder="email@example.com"></div></div>
+        <div class="field"><label for="phone">Phone number</label><div><i class="bi bi-telephone"></i><input id="phone" name="phone" type="tel" required autocomplete="tel" placeholder="+44 7000 000000"></div></div>
+        <div class="field"><label for="flight">Flight number (optional)</label><div><i class="bi bi-airplane"></i><input id="flight" name="flight" autocomplete="off" placeholder="e.g. BA123 or VS45"></div></div>
+        <div class="field"><label for="notes">Special instructions (optional)</label><div><i class="bi bi-chat-left-text"></i><input id="notes" name="notes" autocomplete="off" placeholder="Child seats, extra luggage, meet & greet details"></div></div>
+        
+        <!-- VIP PAYMENT METHOD OPTIONS -->
+        <div class="field" style="grid-column:1 / -1;margin-top:14px;margin-bottom:8px;">
+          <div class="vip-payment-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+            <label style="font-size:14.5px;font-weight:700;color:#1a1a18;letter-spacing:0.02em;display:flex;align-items:center;gap:8px;margin:0;">
+              <i class="bi bi-crown-fill" style="color:#d0ab00;font-size:18px;"></i> Select Payment Method
+            </label>
+            <span style="font-size:11px;background:#1a1a18;color:#f6c400;padding:4px 12px;border-radius:20px;font-weight:600;border:1px solid #d0ab00;letter-spacing:0.05em;display:inline-flex;align-items:center;gap:5px;">
+              <i class="bi bi-shield-check"></i> VIP GUARANTEED TRANSFER
+            </span>
+          </div>
+          
+          <div class="payment-methods-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;width:100%;">
+            <!-- PAY BY CARD OPTION -->
+            <label for="pay-card" id="card-option-box" class="payment-method-card active">
+              <input type="radio" id="pay-card" name="paymentMethod" value="card" checked style="width:20px;height:20px;margin-top:2px;accent-color:#d0ab00;cursor:pointer;">
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+                  <span style="font-size:14.5px;font-weight:700;color:#1a1a18;display:flex;align-items:center;gap:7px;">
+                    <i class="bi bi-credit-card-2-front-fill" style="color:#b08d00;font-size:18px;"></i> Pay by Card / Wallet
+                  </span>
+                  <span class="badge-tag badge-card" style="font-size:10px;font-weight:700;background:#1a1a18;color:#f6c400;padding:3px 9px;border-radius:12px;border:1px solid #d0ab00;"><i class="bi bi-star-fill"></i> VIP PREFERRED</span>
+                </div>
+                <div style="font-size:12px;color:#494945;line-height:1.45;margin:4px 0 8px;">Instant &amp; safe online payment via Stripe (Visa, Mastercard, AMEX, Apple Pay, Google Pay).</div>
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                  <span style="font-size:10.5px;background:#e9f5ff;color:#0056b3;padding:3px 9px;border-radius:10px;display:inline-flex;align-items:center;gap:5px;font-weight:600;width:fit-content;"><i class="bi bi-shield-lock-fill"></i> SSL 256-Bit Encrypted</span>
+                  <span style="font-size:10.5px;color:#856404;font-weight:600;display:inline-flex;align-items:center;gap:5px;"><i class="bi bi-info-circle-fill"></i> Booking confirmed &amp; ticket issued immediately after card payment</span>
+                </div>
+              </div>
+            </label>
+
+            <!-- PAY IN CAR OPTION -->
+            <label for="pay-cash" id="cash-option-box" class="payment-method-card">
+              <input type="radio" id="pay-cash" name="paymentMethod" value="cash" style="width:20px;height:20px;margin-top:2px;accent-color:#28a745;cursor:pointer;">
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+                  <span style="font-size:14.5px;font-weight:700;color:#1a1a18;display:flex;align-items:center;gap:7px;">
+                    <i class="bi bi-cash-stack" style="color:#28a745;font-size:18px;"></i> Pay Cash in Car
+                  </span>
+                  <span class="badge-tag badge-cash" style="font-size:10px;font-weight:700;background:#155724;color:#ffffff;padding:3px 9px;border-radius:12px;"><i class="bi bi-car-front-fill"></i> CHAUFFEUR CASH</span>
+                </div>
+                <div style="font-size:12px;color:#494945;line-height:1.45;margin:4px 0 8px;">Reserve your luxury transfer now and pay your chauffeur in cash upon arrival.</div>
+                <div style="display:flex;flex-direction:column;gap:5px;">
+                  <span style="font-size:10.5px;background:#e6f9ed;color:#155724;padding:3px 9px;border-radius:10px;display:inline-flex;align-items:center;gap:5px;font-weight:600;width:fit-content;"><i class="bi bi-check-circle-fill"></i> Zero Pre-payment Needed</span>
+                  <span style="font-size:10.5px;color:#155724;font-weight:600;display:inline-flex;align-items:center;gap:5px;"><i class="bi bi-envelope-check-fill"></i> Instant booking reservation &amp; confirmation email</span>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="field terms-agree-field" style="display:flex;align-items:flex-start;gap:10px;margin:14px 0 18px;">
+          <input type="checkbox" id="terms-agree" name="termsAgree" required style="width:18px;height:18px;margin-top:1px;accent-color:#d0ab00;flex-shrink:0;">
+          <label for="terms-agree" style="font-size:11.5px;color:#444;line-height:1.5;cursor:pointer;">I have read and agree to the <a href="terms.html" target="_blank" style="color:#b08d00;font-weight:600;text-decoration:underline;">J Transport Group Ltd Passenger Terms &amp; Conditions</a> (Cancellations, Child Seats £10, Waiting Time &amp; Safety Policies).</label>
+        </div>
+        <button class="search-button" id="submit-booking-btn" type="submit" style="width:100%;height:46px;font-size:14px;border-radius:8px;">Pay Securely Online Now <i class="bi bi-lock-fill"></i></button>
+        <p class="form-message" id="checkout-message" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-main">
+    <div class="footer-brand">
+      <a class="brand brand-footer" href="index.html"><img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD"></a>
+      <p>J Transport Group LTD provides 24/7 first-class airport transfer and chauffeur services across London and surrounding UK side areas.</p>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <a href="services.html">Services</a>
+      <a href="blogs.html">Blogs &amp; Guides</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+    </div>
+    <div>
+      <h4>Reviews &amp; Ratings</h4>
+      <a href="https://g.page/r/CeiPQzjIIFDsECE/review" target="_blank" rel="noopener noreferrer"><i class="bi bi-google"></i> ⭐ Review us on Google</a>
+    </div>
+    <div>
+      <h4>Contact Details</h4>
+      <a href="tel:+442039962897"><i class="bi bi-telephone"></i> +44 20 3996 2897</a>
+      <a href="mailto:jtransportgroup.ltd@gmail.com"><i class="bi bi-envelope"></i> jtransportgroup.ltd@gmail.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 J Transport Group LTD. All rights reserved. · <a href="terms.html" style="color:#f6c400;text-decoration:underline;">Terms &amp; Conditions</a></span>
+    <div class="license-box">
+      <strong>TLC Licensed Operator</strong><br>
+      Licence Holder: <b>J TRANSPORT GROUP LTD</b> · Licence Number: <b>01103601</b><br>
+      Trading at: Office 3.40, 6-9 The Square, Stockley Park, UB11 1FW<br>
+      Trading as: FCHW Chauffeur Services · Valid: 24 September 2024 to 23 September 2029
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/script.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/checkout.js"></script>
+
+</body>
+</html>
