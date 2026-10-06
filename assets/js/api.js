@@ -1,5 +1,7 @@
 async function api(path, options = {}) {
-  const response = await fetch(path, {
+  const baseUrl = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL.replace(/\/$/, '') : '';
+  const url = (path.startsWith('http://') || path.startsWith('https://')) ? path : (baseUrl + path);
+  const response = await fetch(url, {
     credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
     ...options,

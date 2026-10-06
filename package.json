@@ -1,0 +1,19 @@
+{
+  "name": "ali-jtransport",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node backend/server.js",
+    "test": "npm test --prefix backend"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^10.0.14",
+    "sql.js": "^1.14.2",
+    "sqlite3": "^6.0.1",
+    "stripe": "^18.5.0"
+  }
+}
