@@ -233,6 +233,7 @@ export function createApp(options = {}) {
 
   // CORS middleware for production API flexibility & security
   const allowedOrigins = new Set([
+    "https://ali-j-transport.de.deplexo.com",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     "http://localhost:3000",
@@ -240,22 +241,30 @@ export function createApp(options = {}) {
   ]);
 
   app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (origin) {
-      const base = appBaseUrl();
-      const isAllowed = allowedOrigins.has(origin) || origin === base || origin.endsWith(".deplexo.app");
-      if (isAllowed) {
-        res.setHeader("Access-Control-Allow-Origin", origin);
-        res.setHeader("Access-Control-Allow-Credentials", "true");
-        res.setHeader(
-          "Access-Control-Allow-Headers",
-          "Content-Type, Authorization, Cookie"
-        );
-        res.setHeader(
-          "Access-Control-Allow-Methods",
-          "GET, POST, PUT, DELETE, OPTIONS"
-        );
+    try {
+      const origin = req.headers.origin;
+      if (origin) {
+        const base = appBaseUrl();
+        const isAllowed =
+          allowedOrigins.has(origin) ||
+          origin === base ||
+          origin.endsWith(".deplexo.com") ||
+          origin.endsWith(".deplexo.app");
+        if (isAllowed) {
+          res.setHeader("Access-Control-Allow-Origin", origin);
+          res.setHeader("Access-Control-Allow-Credentials", "true");
+          res.setHeader(
+            "Access-Control-Allow-Headers",
+            "Content-Type, Authorization, Cookie"
+          );
+          res.setHeader(
+            "Access-Control-Allow-Methods",
+            "GET, POST, PUT, DELETE, OPTIONS"
+          );
+        }
       }
+    } catch (err) {
+      // Prevent CORS processing error from failing request
     }
     if (req.method === "OPTIONS") {
       res.sendStatus(204);
@@ -267,6 +276,7 @@ export function createApp(options = {}) {
   // Health check
   app.get("/api/health", (_req, res) => {
     res.json({
+      status: "ok",
       ok: true,
       payments:
         stripeSecret().startsWith("sk_") ||
