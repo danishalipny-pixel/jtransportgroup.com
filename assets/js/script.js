@@ -14,12 +14,28 @@
     mobileNav?.classList.remove('open');
   };
 
-  menu?.addEventListener('click', () => {
-    const open = menu.getAttribute('aria-expanded') !== 'true';
-    menu.setAttribute('aria-expanded', String(open));
-    menu.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  const toggleMenu = (event) => {
+    if (event && event.type === 'touchstart') {
+      event.preventDefault();
+    }
+    const open = menu?.getAttribute('aria-expanded') !== 'true';
+    menu?.setAttribute('aria-expanded', String(open));
+    menu?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     mobileNav?.classList.toggle('open', open);
-  });
+  };
+
+  if (menu) {
+    let touched = false;
+    menu.addEventListener('touchstart', (e) => {
+      touched = true;
+      toggleMenu(e);
+      setTimeout(() => { touched = false; }, 400);
+    }, { passive: false });
+
+    menu.addEventListener('click', (e) => {
+      if (!touched) toggleMenu(e);
+    });
+  }
 
   mobileNav?.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
 
