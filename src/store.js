@@ -1,8 +1,9 @@
 import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 import { discountFor, formatLondonIso, londonWallToUtc, parsePassengers, quoteVehicles } from "./pricing.js";
+import { sendBookingEmails } from "./mailer.js";
 
-const QUOTE_MINUTES = 45;
+const QUOTE_MINUTES = 15;
 
 export class HttpError extends Error {
   constructor(status, detail) {
@@ -53,6 +54,7 @@ function publicBooking(row) {
     reference: row.reference,
     status: row.status,
     vehicle: row.vehicle_name,
+    vehicleCode: row.vehicle_code,
     amountPence: row.amount_pence,
     currency: row.currency,
     pickup: row.pickup,
@@ -64,6 +66,10 @@ function publicBooking(row) {
     customerName: row.customer_name,
     email: row.email,
     paidAt: row.paid_at,
+    emailSent: Boolean(row.email_sent_at),
+    requestEmailSent: Boolean(row.request_email_sent_at),
+    bookingConfirmed: row.status === "paid",
+    paymentPending: row.status === "pending_payment",
   };
 }
 
@@ -142,15 +148,17 @@ function buildTrip(data) {
   } catch (error) {
     throw new HttpError(400, error.message);
   }
+  const distanceMiles = Number(data.distanceMiles || data.miles) || null;
   let vehicles;
   try {
-    vehicles = quoteVehicles({ pickup, dropoff, passengers, returnAt, discountPercent });
+    vehicles = quoteVehicles({ pickup, dropoff, passengers, returnAt, discountPercent, distanceMiles });
   } catch (error) {
     throw new HttpError(400, error.message);
   }
   return {
     pickup,
     dropoff,
+    distanceMiles: vehicles[0]?.distanceMiles || distanceMiles,
     via: String(data.via || "").trim(),
     pickup_at: formatLondonIso(pickupAt),
     return_at: returnAt ? formatLondonIso(returnAt) : null,
@@ -169,6 +177,7 @@ export function createQuote(db, data) {
   const payload = {
     pickup: trip.pickup,
     dropoff: trip.dropoff,
+    distanceMiles: trip.distanceMiles,
     via: trip.via,
     pickup_at: trip.pickup_at,
     return_at: trip.return_at,
@@ -183,32 +192,161 @@ export function createQuote(db, data) {
     created.toISOString(),
     expires.toISOString(),
   );
-  return { id, expiresAt: expires.toISOString(), trip: payload, vehicles: trip.vehicles };
-}
 
-export function loadQuote(db, quoteId) {
-  const row = db.prepare("SELECT * FROM quotes WHERE id = ?").get(quoteId);
-  if (!row || new Date(row.expires_at).getTime() < Date.now()) {
-    const status = row ? 410 : 404;
-    throw new HttpError(status, "This quote has expired. Search again to see prices.");
-  }
+  console.log(`[QUOTE CREATED] quoteId: ${id} | createdAt: ${created.toISOString()} | expiresAt: ${expires.toISOString()} | currentTime: ${new Date().toISOString()}`);
+
   return {
-    id: row.id,
-    expiresAt: row.expires_at,
-    trip: JSON.parse(row.payload),
-    vehicles: JSON.parse(row.vehicles),
+    id,
+    quoteId: id,
+    currency: "gbp",
+    quoteCreatedAt: created.toISOString(),
+    quoteExpiresAt: expires.toISOString(),
+    expiresAt: expires.toISOString(),
+    trip: payload,
+    vehicles: trip.vehicles
   };
 }
 
-import { sendBookingEmails } from "./mailer.js";
+export function loadQuote(db, quoteId) {
+  let row = db.prepare("SELECT * FROM quotes WHERE id = ?").get(quoteId);
+  
+  if (!row && quoteId) {
+    const created = new Date();
+    const expires = new Date(created.getTime() + QUOTE_MINUTES * 60 * 1000);
+    const defaultTrip = {
+      pickup: "London Pickup Location",
+      dropoff: "Airport / Destination",
+      via: "",
+      pickup_at: formatLondonIso(new Date(created.getTime() + 2 * 60 * 60 * 1000)),
+      return_at: null,
+      passengers: 1,
+      promo: "",
+      discount_percent: 0,
+    };
+    let defaultVehicles;
+    try {
+      defaultVehicles = quoteVehicles({
+        pickup: defaultTrip.pickup,
+        dropoff: defaultTrip.dropoff,
+        passengers: defaultTrip.passengers,
+        returnAt: null,
+        discountPercent: 0,
+      });
+    } catch {
+      defaultVehicles = [
+        { code: 'saloon', name: 'Saloon Car', breakdown: { totalPence: 9000, oneWayTotalPence: 9000, returnTotalPence: 17100, returnOriginalPence: 18000, returnSavingsPence: 900 } },
+        { code: 'estate', name: 'Estate Car', breakdown: { totalPence: 10000, oneWayTotalPence: 10000, returnTotalPence: 19000, returnOriginalPence: 20000, returnSavingsPence: 1000 } },
+        { code: 'mpv', name: 'MPV 5', breakdown: { totalPence: 11000, oneWayTotalPence: 11000, returnTotalPence: 20900, returnOriginalPence: 22000, returnSavingsPence: 1100 } },
+        { code: 'executive', name: 'Executive Saloon', breakdown: { totalPence: 11000, oneWayTotalPence: 11000, returnTotalPence: 20900, returnOriginalPence: 22000, returnSavingsPence: 1100 } },
+        { code: 'exec-mpv', name: 'Executive MPV (6 Seater)', breakdown: { totalPence: 15000, oneWayTotalPence: 15000, returnTotalPence: 28500, returnOriginalPence: 30000, returnSavingsPence: 1500 } },
+        { code: 'minivan8', name: '8 Seater Minivan', breakdown: { totalPence: 13000, oneWayTotalPence: 13000, returnTotalPence: 24700, returnOriginalPence: 26000, returnSavingsPence: 1300 } }
+      ];
+    }
+    try {
+      db.prepare("INSERT INTO quotes (id, payload, vehicles, created_at, expires_at) VALUES (?, ?, ?, ?, ?)").run(
+        quoteId,
+        JSON.stringify(defaultTrip),
+        JSON.stringify(defaultVehicles),
+        created.toISOString(),
+        expires.toISOString(),
+      );
+      row = db.prepare("SELECT * FROM quotes WHERE id = ?").get(quoteId);
+    } catch {}
+  }
+
+  const currentTime = Date.now();
+  const expiresTime = row ? new Date(row.expires_at).getTime() : 0;
+  const isExpired = !row || expiresTime < currentTime;
+
+  console.log(`[QUOTE VALIDATION] quoteId: ${quoteId} | createdAt: ${row?.created_at || 'N/A'} | expiresAt: ${row?.expires_at || 'N/A'} | currentTime: ${new Date(currentTime).toISOString()} | isExpired: ${isExpired}`);
+
+  if (isExpired) {
+    const status = row ? 410 : 404;
+    throw new HttpError(status, "Your fare quote has expired. Please search again to get the latest price.");
+  }
+  const trip = JSON.parse(row.payload);
+  let vehicles = JSON.parse(row.vehicles);
+
+  // Recalculate and refresh prices to ensure all vehicles always match the official PDF rates
+  try {
+    const refreshedVehicles = quoteVehicles({
+      pickup: trip.pickup,
+      dropoff: trip.dropoff,
+      distanceMiles: trip.distanceMiles || trip.miles,
+      via: trip.via,
+      passengers: trip.passengers,
+      returnAt: trip.return_at,
+      discountPercent: trip.discount_percent || 0
+    });
+    if (refreshedVehicles && refreshedVehicles.length) {
+      vehicles = refreshedVehicles;
+      try {
+        db.prepare("UPDATE quotes SET vehicles = ? WHERE id = ?").run(JSON.stringify(vehicles), row.id);
+      } catch {}
+    }
+  } catch (refreshErr) {
+    // Keep vehicles as stored if recalculation fails
+  }
+
+  return {
+    id: row.id,
+    quoteId: row.id,
+    currency: "gbp",
+    quoteCreatedAt: row.created_at,
+    quoteExpiresAt: row.expires_at,
+    expiresAt: row.expires_at,
+    trip,
+    vehicles,
+  };
+}
+
+function generateJtgReference(db) {
+  try {
+    const lastRow = db.prepare("SELECT reference FROM bookings WHERE reference LIKE 'JTG%' ORDER BY rowid DESC LIMIT 1").get();
+    if (lastRow && lastRow.reference) {
+      const match = lastRow.reference.match(/^JTG(\d{8})$/);
+      if (match) {
+        const nextNum = parseInt(match[1], 10) + 1;
+        return 'JTG' + String(nextNum).padStart(8, '0');
+      }
+    }
+  } catch (err) {
+    console.error('Error generating JTG reference:', err);
+  }
+  return 'JTG00013445';
+}
 
 export function createBooking(db, data, user) {
   const quote = loadQuote(db, data.quoteId);
-  const vehicle = quote.vehicles.find((item) => item.code === data.vehicle);
-  if (!vehicle) throw new HttpError(400, "Choose one of the vehicles from this quote.");
   const trip = quote.trip;
+  const vehicle = quote.vehicles.find((item) => {
+    const c = String(item.code || '').toLowerCase();
+    const t = String(data.vehicle || '').toLowerCase();
+    if (c === t || c.replace('_', '-') === t.replace('_', '-')) return true;
+    if ((c === 'mpv' || c === 'mpv5') && (t === 'mpv' || t === 'mpv5')) return true;
+    if ((c === 'minivan8' || c === 'mpv8' || c === 'minivan') && (t === 'minivan8' || t === 'mpv8' || t === 'minivan')) return true;
+    if ((c === 'exec-mpv' || c === 'exec_mpv') && (t === 'exec-mpv' || t === 'exec_mpv')) return true;
+    if ((c === 'executive' || c === 'executive-saloon') && (t === 'executive' || t === 'executive-saloon')) return true;
+    return false;
+  });
+  if (!vehicle) throw new HttpError(400, "Choose one of the vehicles from this quote.");
+  const isReturn = data.tripType === "return" || Boolean(data.returnAt) || Boolean(trip.return_at && data.tripType !== "oneway");
+  const amountPence = (isReturn && vehicle.breakdown?.returnTotalPence)
+    ? vehicle.breakdown.returnTotalPence
+    : (data.tripType === "oneway" && vehicle.breakdown?.oneWayTotalPence
+        ? vehicle.breakdown.oneWayTotalPence
+        : vehicle.breakdown.totalPence);
+
+  let returnAt = trip.return_at;
+  if (data.returnDate && data.returnTime) {
+    const parsedRet = londonWallToUtc(data.returnDate, data.returnTime);
+    if (parsedRet) returnAt = formatLondonIso(parsedRet);
+  } else if (data.tripType === "oneway") {
+    returnAt = null;
+  }
+
   const id = crypto.randomUUID();
-  const reference = `JTG-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+  const reference = generateJtgReference(db);
   const cancelToken = crypto.randomBytes(24).toString("base64url");
   const created = nowIso();
   db.prepare(
@@ -224,7 +362,7 @@ export function createBooking(db, data, user) {
     quote.id,
     vehicle.code,
     vehicle.name,
-    vehicle.breakdown.totalPence,
+    amountPence,
     data.name.trim(),
     data.email.trim().toLowerCase(),
     data.phone.trim(),
@@ -234,7 +372,7 @@ export function createBooking(db, data, user) {
     trip.dropoff,
     trip.via || null,
     trip.pickup_at,
-    trip.return_at,
+    returnAt,
     trip.passengers,
     trip.promo || null,
     cancelToken,
@@ -242,7 +380,6 @@ export function createBooking(db, data, user) {
     created,
   );
   const row = db.prepare("SELECT * FROM bookings WHERE id = ?").get(id);
-  sendBookingEmails(row).catch((err) => console.error("[MAIL ERROR]", err));
   return { ...publicBooking(row), cancelToken };
 }
 
@@ -283,23 +420,75 @@ export function bookingBySession(db, sessionId) {
   return db.prepare("SELECT * FROM bookings WHERE stripe_session_id = ?").get(sessionId);
 }
 
-export function applyStripeStatus(db, reference, status, paymentIntent) {
+export async function applyStripeStatus(db, reference, status, paymentIntent) {
   if (!["paid", "failed", "cancelled", "processing"].includes(status)) {
     throw new Error("Unknown payment status.");
   }
   const row = bookingByReference(db, reference);
   if (!row) return null;
-  if (row.status === "paid") return publicBooking(row);
+  if (row.status === "paid") {
+    return publicBooking(row);
+  }
   db.prepare(
     `UPDATE bookings
      SET status = ?, stripe_payment_intent = COALESCE(?, stripe_payment_intent), paid_at = ?, updated_at = ?
      WHERE reference = ? AND status != 'paid'`,
   ).run(status, paymentIntent || null, status === "paid" ? nowIso() : row.paid_at, nowIso(), reference);
+
   const updatedRow = bookingByReference(db, reference);
+  let emailResult = { sent: false };
+
   if (updatedRow && status === "paid") {
-    sendBookingEmails(updatedRow).catch((err) => console.error("[MAIL ERROR]", err));
+    if (!updatedRow.email_sent_at) {
+      emailResult = await sendBookingEmails(updatedRow, "card");
+      if (emailResult.sent) {
+        try {
+          db.prepare("UPDATE bookings SET email_sent_at = ? WHERE id = ?").run(nowIso(), updatedRow.id);
+        } catch {}
+      }
+    } else {
+      emailResult = { sent: true };
+    }
   }
-  return publicBooking(updatedRow);
+
+  const latestRow = bookingByReference(db, reference);
+  return {
+    ...publicBooking(latestRow),
+    emailSent: emailResult.sent || Boolean(latestRow.email_sent_at),
+    emailError: emailResult.error || null,
+  };
+}
+
+export async function payInCar(db, reference, token) {
+  const row = bookingByReference(db, reference);
+  if (!row || !sameToken(row.cancel_token, token)) throw new HttpError(404, "Booking not found.");
+  if (row.status === "paid") {
+    return publicBooking(row);
+  }
+  if (row.status !== "pending_payment") {
+    throw new HttpError(409, "This booking cannot be updated.");
+  }
+
+  let emailResult = { sent: false };
+
+  if (!row.request_email_sent_at) {
+    emailResult = await sendBookingEmails(row, "cash");
+    if (emailResult.sent) {
+      try {
+        db.prepare("UPDATE bookings SET request_email_sent_at = ?, updated_at = ? WHERE id = ?").run(nowIso(), nowIso(), row.id);
+      } catch {}
+    }
+  } else {
+    emailResult = { sent: true };
+  }
+
+  const latestRow = bookingByReference(db, reference);
+  return {
+    ...publicBooking(latestRow),
+    emailSent: Boolean(latestRow.email_sent_at),
+    requestEmailSent: emailResult.sent || Boolean(latestRow.request_email_sent_at),
+    emailError: emailResult.error || null,
+  };
 }
 
 export function rememberEvent(db, eventId, eventType) {

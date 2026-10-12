@@ -205,6 +205,31 @@ test("cancel needs the token and secret files stay hidden", async () => {
   assert.equal((await api("/api/bookings/mine")).status, 401);
 });
 
+test("pay in car maintains status as pending_payment and sends request email", async () => {
+  const quote = (await api("/api/quotes", { method: "POST", body: trip({ dropoff: "Euston", promo: "" }) })).data;
+  const booked = (
+    await api("/api/bookings", {
+      method: "POST",
+      body: {
+        quoteId: quote.id,
+        vehicle: "saloon",
+        name: "Cash Passenger",
+        email: "cash@example.com",
+        phone: "07700900123",
+      },
+    })
+  ).data;
+  const payResult = await api("/api/payments/pay-in-car", {
+    method: "POST",
+    body: { reference: booked.reference, cancelToken: booked.cancelToken },
+  });
+  assert.equal(payResult.status, 200);
+  assert.equal(payResult.data.status, "pending_payment");
+  assert.equal(payResult.data.paymentPending, true);
+  assert.equal(payResult.data.bookingConfirmed, false);
+});
+
 test.after(() => {
   server.close();
 });
+

@@ -48,7 +48,8 @@ export function openDatabase(file) {
       stripe_payment_intent TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
-      paid_at TEXT
+      paid_at TEXT,
+      email_sent_at TEXT
     );
     CREATE TABLE IF NOT EXISTS payment_events (
       event_id TEXT PRIMARY KEY,
@@ -56,5 +57,15 @@ export function openDatabase(file) {
       created_at TEXT NOT NULL
     );
   `);
+  try {
+    db.exec(`ALTER TABLE bookings ADD COLUMN email_sent_at TEXT;`);
+  } catch {
+    // Column already exists
+  }
+  try {
+    db.exec(`ALTER TABLE bookings ADD COLUMN request_email_sent_at TEXT;`);
+  } catch {
+    // Column already exists
+  }
   return db;
 }

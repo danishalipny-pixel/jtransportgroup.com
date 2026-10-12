@@ -1,4 +1,4 @@
-
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
@@ -18,6 +18,7 @@ import {
   currentUser,
   loadQuote,
   loginUser,
+  payInCar,
   publicBooking,
   publicUser,
   registerUser,
@@ -27,9 +28,9 @@ import {
 } from "./src/store.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-
-// Frontend files are now inside the same folder as server.js
-const siteRoot = here;
+const siteRoot = fs.existsSync(path.join(here, "..", "checkout.html"))
+  ? path.join(here, "..")
+  : here;
 
 dotenv.config({ path: path.join(here, ".env"), override: false });
 
@@ -51,21 +52,17 @@ function webhookSecret() {
 
 function readCookie(req, name) {
   const header = req.headers.cookie || "";
-
   for (const part of header.split(";")) {
     const [key, ...rest] = part.trim().split("=");
-
     if (key === name) {
       return decodeURIComponent(rest.join("="));
     }
   }
-
   return "";
 }
 
 function setSession(res, token) {
   const secure = appBaseUrl().startsWith("https://") ? "; Secure" : "";
-
   res.setHeader(
     "Set-Cookie",
     `mlt_session=${encodeURIComponent(
@@ -83,38 +80,32 @@ function clearSession(res) {
 
 function emailOf(value) {
   const cleaned = String(value || "").trim().toLowerCase();
-
   if (!EMAIL_RE.test(cleaned)) {
     throw new HttpError(422, "Enter a valid email address.");
   }
-
   return cleaned;
 }
 
 function passwordOf(value) {
   const password = String(value || "");
-
   if (password.length < 8 || password.length > 128) {
     throw new HttpError(
       422,
       "Use a password between 8 and 128 characters."
     );
   }
-
   return password;
 }
 
 function phoneOf(value) {
   const phone = String(value || "").trim();
   const digits = phone.replace(/\D/g, "");
-
   if (digits.length < 8 || digits.length > 15) {
     throw new HttpError(
       422,
       "Enter a phone number with 8 to 15 digits."
     );
   }
-
   return phone;
 }
 
@@ -122,7 +113,6 @@ function blockedPath(urlPath) {
   const parts = urlPath
     .split("/")
     .filter((part) => part && part !== ".");
-
   return (
     parts.some((part) => part.startsWith(".")) ||
     ["backend", ".git"].includes(parts[0]) ||
@@ -148,20 +138,16 @@ export function createApp(options = {}) {
     express.raw({ type: "application/json" }),
     wrap(async (req, res) => {
       const secret = webhookSecret();
-
       if (!secret) {
         throw new HttpError(
           503,
           "Stripe webhook secret is not configured."
         );
       }
-
       const stripe = new Stripe(
         stripeSecret() || "sk_test_placeholder"
       );
-
       let event;
-
       try {
         event = stripe.webhooks.constructEvent(
           req.body,
@@ -184,7 +170,6 @@ export function createApp(options = {}) {
       const reference =
         data.metadata?.reference ||
         data.client_reference_id;
-
       const intent =
         typeof data.payment_intent === "string"
           ? data.payment_intent
@@ -194,7 +179,7 @@ export function createApp(options = {}) {
         reference &&
         event.type === "checkout.session.completed"
       ) {
-        applyStripeStatus(
+        await applyStripeStatus(
           db,
           reference,
           data.payment_status === "paid"
@@ -207,7 +192,7 @@ export function createApp(options = {}) {
         event.type ===
           "checkout.session.async_payment_succeeded"
       ) {
-        applyStripeStatus(
+        await applyStripeStatus(
           db,
           reference,
           "paid",
@@ -222,7 +207,7 @@ export function createApp(options = {}) {
             "payment_intent.payment_failed"
         )
       ) {
-        applyStripeStatus(
+        await applyStripeStatus(
           db,
           reference,
           "failed",
@@ -232,7 +217,7 @@ export function createApp(options = {}) {
         reference &&
         event.type === "checkout.session.expired"
       ) {
-        applyStripeStatus(
+        await applyStripeStatus(
           db,
           reference,
           "cancelled",
@@ -261,20 +246,16 @@ export function createApp(options = {}) {
     "/api/auth/register",
     wrap((req, res) => {
       const name = String(req.body?.name || "").trim();
-
       if (name.length < 2) {
         throw new HttpError(400, "Enter your name.");
       }
-
       const phone = phoneOf(req.body?.phone);
-
       const result = registerUser(db, {
         name,
         email: emailOf(req.body?.email),
         phone,
         password: passwordOf(req.body?.password),
       });
-
       setSession(res, result.token);
       res.json(result.user);
     })
@@ -288,7 +269,6 @@ export function createApp(options = {}) {
         email: emailOf(req.body?.email),
         password: passwordOf(req.body?.password),
       });
-
       setSession(res, result.token);
       res.json(result.user);
     })
@@ -308,11 +288,9 @@ export function createApp(options = {}) {
         db,
         readCookie(req, "mlt_session")
       );
-
       if (!user) {
         throw new HttpError(401, "Not signed in.");
       }
-
       res.json(publicUser(user));
     })
   );
@@ -337,13 +315,10 @@ export function createApp(options = {}) {
     "/api/bookings",
     wrap((req, res) => {
       const body = req.body || {};
-
       const name = String(body.name || "").trim();
-
       if (name.length < 2 || name.length > 80) {
         throw new HttpError(422, "Enter your name.");
       }
-
       res.json(
         createBooking(
           db,
@@ -370,14 +345,12 @@ export function createApp(options = {}) {
         db,
         readCookie(req, "mlt_session")
       );
-
       if (!user) {
         throw new HttpError(
           401,
           "Sign in to see your trips."
         );
       }
-
       res.json({
         bookings: userBookings(db, user.id),
       });
@@ -398,12 +371,35 @@ export function createApp(options = {}) {
     })
   );
 
+  // Get booking details by reference
+  app.get(
+    "/api/bookings/:reference",
+    wrap((req, res) => {
+      const row = bookingByReference(db, req.params.reference);
+      if (!row) throw new HttpError(404, "Booking not found.");
+      res.json(publicBooking(row));
+    })
+  );
+
+  // Pay Cash in Car
+  app.post(
+    "/api/payments/pay-in-car",
+    wrap(async (req, res) => {
+      res.json(
+        await payInCar(
+          db,
+          String(req.body?.reference || ""),
+          String(req.body?.cancelToken || "")
+        )
+      );
+    })
+  );
+
   // Stripe checkout
   app.post(
     "/api/payments/checkout",
     wrap(async (req, res) => {
       const secret = stripeSecret();
-
       if (
         !secret.startsWith("sk_") &&
         !secret.startsWith("rk_")
@@ -447,44 +443,34 @@ export function createApp(options = {}) {
       }
 
       const stripe = new Stripe(secret);
-
       let session;
-
       try {
         session =
           await stripe.checkout.sessions.create({
             mode: "payment",
             customer_email: row.email,
             client_reference_id: row.reference,
-
             success_url:
               `${appBaseUrl()}/payment-success.html?session_id={CHECKOUT_SESSION_ID}`,
-
             cancel_url:
               `${appBaseUrl()}/payment-cancelled.html?booking=${row.reference}&token=${row.cancel_token}`,
-
             metadata: {
               reference: row.reference,
             },
-
             payment_intent_data: {
               metadata: {
                 reference: row.reference,
               },
             },
-
             line_items: [
               {
                 quantity: 1,
-
                 price_data: {
                   currency: row.currency,
                   unit_amount: row.amount_pence,
-
                   product_data: {
                     name:
                       `J Transport Group LTD Transfer ${row.reference}`,
-
                     description:
                       `${row.pickup} to ${row.dropoff} · ${row.vehicle_name}`,
                   },
@@ -516,7 +502,6 @@ export function createApp(options = {}) {
     "/api/payments/confirm",
     wrap(async (req, res) => {
       const secret = stripeSecret();
-
       if (
         !secret.startsWith("sk_") &&
         !secret.startsWith("rk_")
@@ -540,7 +525,6 @@ export function createApp(options = {}) {
       }
 
       const stripe = new Stripe(secret);
-
       const session =
         await stripe.checkout.sessions.retrieve(
           String(req.query.session_id)
@@ -564,7 +548,7 @@ export function createApp(options = {}) {
 
       if (session.payment_status === "paid") {
         res.json(
-          applyStripeStatus(
+          await applyStripeStatus(
             db,
             reference,
             "paid",
@@ -576,7 +560,7 @@ export function createApp(options = {}) {
 
       if (session.status === "expired") {
         res.json(
-          applyStripeStatus(
+          await applyStripeStatus(
             db,
             reference,
             "cancelled",
@@ -603,7 +587,6 @@ export function createApp(options = {}) {
         .send("Not found");
       return;
     }
-
     next();
   });
 
@@ -627,7 +610,6 @@ export function createApp(options = {}) {
     }
 
     console.error(error);
-
     res.status(500).json({
       detail: "Something went wrong.",
     });
