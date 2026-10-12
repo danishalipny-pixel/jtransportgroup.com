@@ -1139,7 +1139,7 @@
       }
     }
 
-    if (miles >= 30 && miles <= 50) {
+    if (miles > 30 && miles <= 50) {
       distanceBracket = 'minimum';
       basePrice = 110.00;
     } else if (miles > 50 && miles <= 80) {
@@ -1255,15 +1255,22 @@
       pExecMpv = 150.00;
       pMinivan8 = 130.00;
       pSprinter = 230.00;
-    } else if (miles > 0 && miles < 30) {
-      // Non-airport local trip (< 30 miles)
-      pSaloon = miles <= 5 ? 50.00 : Math.round(50 + (miles - 5) * 2.50);
-      pEstate = miles <= 5 ? 60.00 : Math.round(60 + (miles - 5) * 2.60);
-      pMpv = miles <= 5 ? 70.00 : Math.round(70 + (miles - 5) * 2.80);
-      pExec = miles <= 5 ? 70.00 : Math.round(70 + (miles - 5) * 2.80);
-      pExecMpv = miles <= 5 ? 100.00 : Math.round(100 + (miles - 5) * 3.80);
-      pMinivan8 = miles <= 5 ? 90.00 : Math.round(90 + (miles - 5) * 3.50);
-      pSprinter = miles <= 5 ? 120.00 : Math.round(120 + (miles - 5) * 4.50);
+    } else if (miles > 0 && miles <= 30) {
+      // Non-airport local trip (<= 30 miles) from Official J TRANSPORT GROUP LTD Short Distance Price List
+      const shortTier = miles <= 5 ? '0-5' : miles <= 10 ? '6-10' : miles <= 20 ? '11-20' : '21-30';
+      const rates = {
+        '0-5': { saloon: 45.00, estate: 55.00, executive: 65.00, mpv: 65.00, minivan8: 75.00, 'exec-mpv': 100.00, sprinter: 150.00 },
+        '6-10': { saloon: 55.00, estate: 70.00, executive: 75.00, mpv: 75.00, minivan8: 85.00, 'exec-mpv': 130.00, sprinter: 170.00 },
+        '11-20': { saloon: 70.00, estate: 85.00, executive: 85.00, mpv: 85.00, minivan8: 95.00, 'exec-mpv': 145.00, sprinter: 190.00 },
+        '21-30': { saloon: 85.00, estate: 95.00, executive: 105.00, mpv: 105.00, minivan8: 120.00, 'exec-mpv': 150.00, sprinter: 220.00 },
+      }[shortTier];
+      pSaloon = rates.saloon;
+      pEstate = rates.estate;
+      pMpv = rates.mpv;
+      pExec = rates.executive;
+      pExecMpv = rates['exec-mpv'];
+      pMinivan8 = rates.minivan8;
+      pSprinter = rates.sprinter;
     }
 
     if (PDF_FARES[distanceBracket]) {

@@ -253,8 +253,80 @@ PDF_DISTANCE_FIXED_PRICING.low = PDF_DISTANCE_FIXED_PRICING.minimum;
 PDF_DISTANCE_FIXED_PRICING.medium = PDF_DISTANCE_FIXED_PRICING.high;
 export const MEDIUM_DISTANCE_FIXED_PRICING = PDF_DISTANCE_FIXED_PRICING;
 
+// Official J TRANSPORT GROUP LTD – SHORT DISTANCE PRICE LIST (0-30 Miles)
+export const SHORT_DISTANCE_FIXED_PRICING = {
+  "0-5": {
+    saloon: 45,
+    estate: 55,
+    executive: 65,
+    "executive-saloon": 65,
+    mpv: 65,
+    mpv5: 65,
+    minivan: 75,
+    minivan8: 75,
+    mpv8: 75,
+    exec_mpv: 100,
+    "exec-mpv": 100,
+    "mpv-plus": 100,
+    sprinter: 150,
+  },
+  "6-10": {
+    saloon: 55,
+    estate: 70,
+    executive: 75,
+    "executive-saloon": 75,
+    mpv: 75,
+    mpv5: 75,
+    minivan: 85,
+    minivan8: 85,
+    mpv8: 85,
+    exec_mpv: 130,
+    "exec-mpv": 130,
+    "mpv-plus": 130,
+    sprinter: 170,
+  },
+  "11-20": {
+    saloon: 70,
+    estate: 85,
+    executive: 85,
+    "executive-saloon": 85,
+    mpv: 85,
+    mpv5: 85,
+    minivan: 95,
+    minivan8: 95,
+    mpv8: 95,
+    exec_mpv: 145,
+    "exec-mpv": 145,
+    "mpv-plus": 145,
+    sprinter: 190,
+  },
+  "21-30": {
+    saloon: 85,
+    estate: 95,
+    executive: 105,
+    "executive-saloon": 105,
+    mpv: 105,
+    mpv5: 105,
+    minivan: 120,
+    minivan8: 120,
+    mpv8: 120,
+    exec_mpv: 150,
+    "exec-mpv": 150,
+    "mpv-plus": 150,
+    sprinter: 220,
+  },
+};
+
+export function getShortDistanceTier(miles) {
+  if (miles <= 5) return "0-5";
+  if (miles <= 10) return "6-10";
+  if (miles <= 20) return "11-20";
+  if (miles <= 30) return "21-30";
+  return null;
+}
+
 export function getDistanceFareTier(miles) {
-  if (miles >= 30 && miles <= 50) return "minimum";
+  if (miles > 30 && miles <= 50) return "minimum";
   if (miles > 50 && miles <= 80) return "high";
   if (miles > 80 && miles <= 90) return "maximum";
   return null;
@@ -514,7 +586,7 @@ export function quoteVehicles(trip) {
   const estimatedMiles = Number(trip.distanceMiles || trip.miles) || estimateDistanceMiles(trip.pickup, trip.dropoff);
 
   const options = [];
-  const MINIMUM_FARE_PENCE = 5000; // £50.00 Minimum Fare for up to 2 miles
+  const MINIMUM_FARE_PENCE = 4500; // £45.00 Minimum Fare per official Short Distance Price List (Saloon 0-5 miles)
 
   for (const vehicle of VEHICLES) {
     if (vehicle.maxPassengers < trip.passengers) continue;
@@ -522,7 +594,7 @@ export function quoteVehicles(trip) {
     let basePence;
 
     // 1. Distance-Based Fixed Pricing (30-90 miles) - Minimum Fare, High Fare, Maximum Fare per PDF
-    if (estimatedMiles >= 30 && estimatedMiles <= 90) {
+    if (estimatedMiles > 30 && estimatedMiles <= 90) {
       const tier = getDistanceFareTier(estimatedMiles);
       if (tier && PDF_DISTANCE_FIXED_PRICING[tier]) {
         const fare = PDF_DISTANCE_FIXED_PRICING[tier][vehicle.code] 
@@ -549,40 +621,43 @@ export function quoteVehicles(trip) {
       }
     }
 
-    // 3. Fixed airport postcode zone fares (for London local airport transfers < 30 miles)
-    if (!basePence && airportKey && AIRPORT_PRICING[airportKey] && (estimatedMiles < 30 || isLondonPlace(otherPlace))) {
+    // 3. Fixed airport postcode zone fares (for London local airport transfers)
+    if (!basePence && airportKey && AIRPORT_PRICING[airportKey] && isLondonPlace(otherPlace)) {
       const gbpPrice = AIRPORT_PRICING[airportKey][zone]?.[vehicle.code] 
         || AIRPORT_PRICING[airportKey][zone]?.[vehicle.code === "mpv" ? "mpv5" : vehicle.code]
         || AIRPORT_PRICING[airportKey]["inner"]?.[vehicle.code];
       if (gbpPrice) {
         basePence = gbpPrice * 100;
-      } else {
-        const rate = vehicle.localPerMilePence || 250;
-        basePence = vehicle.basePence + Math.round(estimatedMiles * rate);
       }
     }
 
-    // 4. Long distance mileage calculation (> 90 miles) using PDF per-mile rates (Note 2)
+    // 4. Short-distance vehicle pricing logic (0-30 miles) from official SHORT DISTANCE PRICE LIST
+    if (!basePence && estimatedMiles <= 30) {
+      const shortTier = getShortDistanceTier(estimatedMiles);
+      if (shortTier && SHORT_DISTANCE_FIXED_PRICING[shortTier]) {
+        const fare = SHORT_DISTANCE_FIXED_PRICING[shortTier][vehicle.code]
+          ?? (vehicle.code === "mpv" ? SHORT_DISTANCE_FIXED_PRICING[shortTier].mpv5 : undefined)
+          ?? (vehicle.code === "mpv5" ? SHORT_DISTANCE_FIXED_PRICING[shortTier].mpv : undefined)
+          ?? (vehicle.code === "exec-mpv" ? SHORT_DISTANCE_FIXED_PRICING[shortTier].exec_mpv : undefined)
+          ?? (vehicle.code === "minivan8" ? SHORT_DISTANCE_FIXED_PRICING[shortTier].mpv8 : undefined);
+        if (fare !== undefined) {
+          basePence = fare * 100;
+        }
+      }
+    }
+
+    // 5. Long distance mileage calculation (> 90 miles) using PDF per-mile rates (Note 2)
     if (!basePence && estimatedMiles > 90) {
       basePence = Math.round(estimatedMiles * vehicle.perMilePence);
     }
 
-    // 5. Short distance local calculation (< 30 miles)
+    // 6. Fallback if not matched above
     if (!basePence) {
-      if (vehicle.code === "saloon") {
-        const miles = Math.max(0, estimatedMiles);
-        if (miles <= 5) {
-          basePence = 5000;
-        } else {
-          basePence = 5000 + Math.round((miles - 5) * 250);
-        }
-      } else {
-        const rate = vehicle.localPerMilePence || 250;
-        basePence = vehicle.basePence + Math.round(estimatedMiles * rate);
-      }
+      const rate = vehicle.localPerMilePence || 250;
+      basePence = vehicle.basePence + Math.round(estimatedMiles * rate);
     }
 
-    // Enforce Minimum Fare Rule (£50.00 / 5000 pence minimum)
+    // Enforce Minimum Fare Rule (£45.00 / 4500 pence minimum)
     if (basePence < MINIMUM_FARE_PENCE) {
       basePence = MINIMUM_FARE_PENCE;
     }

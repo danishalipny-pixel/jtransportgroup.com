@@ -229,6 +229,40 @@ test("pay in car maintains status as pending_payment and sends request email", a
   assert.equal(payResult.data.bookingConfirmed, false);
 });
 
+test("short distance vehicle pricing (0-30 miles) matches official PDF rates exactly", async () => {
+  const brackets = [
+    { miles: 5, expected: { saloon: 4500, estate: 5500, executive: 6500, mpv5: 6500, "exec-mpv": 10000, minivan8: 7500, sprinter: 15000 } },
+    { miles: 6, expected: { saloon: 5500, estate: 7000, executive: 7500, mpv5: 7500, "exec-mpv": 13000, minivan8: 8500, sprinter: 17000 } },
+    { miles: 10, expected: { saloon: 5500, estate: 7000, executive: 7500, mpv5: 7500, "exec-mpv": 13000, minivan8: 8500, sprinter: 17000 } },
+    { miles: 11, expected: { saloon: 7000, estate: 8500, executive: 8500, mpv5: 8500, "exec-mpv": 14500, minivan8: 9500, sprinter: 19000 } },
+    { miles: 20, expected: { saloon: 7000, estate: 8500, executive: 8500, mpv5: 8500, "exec-mpv": 14500, minivan8: 9500, sprinter: 19000 } },
+    { miles: 21, expected: { saloon: 8500, estate: 9500, executive: 10500, mpv5: 10500, "exec-mpv": 15000, minivan8: 12000, sprinter: 22000 } },
+    { miles: 30, expected: { saloon: 8500, estate: 9500, executive: 10500, mpv5: 10500, "exec-mpv": 15000, minivan8: 12000, sprinter: 22000 } },
+  ];
+
+  for (const item of brackets) {
+    const res = await api("/api/quotes", {
+      method: "POST",
+      body: trip({
+        pickup: "Point A",
+        dropoff: "Point B",
+        distanceMiles: item.miles,
+        promo: "",
+      }),
+    });
+    assert.equal(res.status, 200);
+    for (const [code, expPence] of Object.entries(item.expected)) {
+      const veh = res.data.vehicles.find((v) => v.code === code);
+      assert.ok(veh, `Vehicle ${code} should exist`);
+      assert.equal(
+        veh.breakdown.basePence,
+        expPence,
+        `Expected ${code} at ${item.miles} miles to be £${expPence / 100}, got £${veh.breakdown.basePence / 100}`
+      );
+    }
+  }
+});
+
 test.after(() => {
   server.close();
 });
