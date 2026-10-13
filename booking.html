@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -15,13 +15,14 @@
 <header class="site-header">
   <div class="nav-shell">
     <a class="brand" href="index.html" aria-label="J Transport Group LTD home">
-      <img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD â€” Book and Ride">
+      <img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD — Book and Ride">
     </a>
     <a class="header-phone" href="tel:+442039962897"><i class="bi bi-telephone-fill"></i> +44 20 3996 2897</a>
     <nav class="desktop-nav">
       <a href="services.html">Services <i class="bi bi-chevron-down"></i></a>
+      <a href="fleet.html">Hire Minibus</a>
       <a href="fleet.html">Fleet</a>
-      <a href="blogs.html">Blogs</a>
+      <a href="index.html#ride-info">Ride Info</a>
       <a href="about.html">About Us</a>
       <a href="contact.html">Contact</a>
     </nav>
@@ -30,8 +31,8 @@
   </div>
   <nav class="mobile-nav">
     <a href="services.html">Services</a>
-    <a href="fleet.html">Fleet</a>
-    <a href="blogs.html">Blogs</a>
+    <a href="fleet.html">Fleet &amp; Minibus</a>
+    <a href="index.html#ride-info">Ride Info</a>
     <a href="about.html">About Us</a>
     <a href="contact.html">Contact</a>
   </nav>
@@ -45,55 +46,65 @@
           <span class="section-kicker">J TRANSPORT GROUP LTD</span>
           <h2>Book Your Ride <em>in Seconds</em></h2>
         </div>
-        <span class="secure"><i class="bi bi-shield-check"></i> Licensed Operator Â· Safe &amp; Secure</span>
+        <span class="secure"><i class="bi bi-shield-check"></i> TfL Licence Company · Safe &amp; Secure</span>
       </div>
-      <form class="booking-form" id="booking-form" novalidate>
-        <div class="route-fields">
-          <div class="field location-field">
-            <label for="pickup">Pick Up Location</label>
-            <div><i class="bi bi-geo-alt"></i><input id="pickup" required placeholder="Pick Up Location or Postcode (e.g. Heathrow, Stockley Park, EC1)" autocomplete="off"></div>
+      <form class="booking-form has-side-map" id="booking-form" novalidate>
+        <div class="form-inputs-side">
+          <div class="route-fields">
+            <div class="field location-field">
+              <label for="pickup">Pick Up Location</label>
+              <div><i class="bi bi-geo-alt"></i><input id="pickup" required placeholder="Pick Up Location or Postcode (e.g. Heathrow, Stockley Park, EC1)" autocomplete="off"></div>
+            </div>
+            <button class="swap" type="button" aria-label="Swap pickup and drop-off"><i class="bi bi-arrow-left-right"></i></button>
+            <div class="field location-field">
+              <label for="dropoff">Drop off Location</label>
+              <div><i class="bi bi-geo-alt-fill"></i><input id="dropoff" required placeholder="Drop off Location or Postcode (e.g. Gatwick, Central London)" autocomplete="off"></div>
+            </div>
           </div>
-          <button class="swap" type="button" aria-label="Swap pickup and drop-off"><i class="bi bi-arrow-left-right"></i></button>
-          <div class="field location-field">
-            <label for="dropoff">Drop off Location</label>
-            <div><i class="bi bi-geo-alt-fill"></i><input id="dropoff" required placeholder="Drop off Location or Postcode (e.g. Gatwick, Central London)" autocomplete="off"></div>
+          <div class="field">
+            <label for="pickup-date">Pickup Date &amp; Time</label>
+            <div class="field-time-row"><i class="bi bi-calendar-event"></i><input id="pickup-date" type="date" required><input id="pickup-time" type="time" required aria-label="Pickup time"></div>
+          </div>
+          <div class="field">
+            <label for="return-date">Return Date &amp; Time (Optional)</label>
+            <div class="field-time-row"><i class="bi bi-calendar2-check"></i><input id="return-date" type="date"><input id="return-time" type="time" aria-label="Return time"></div>
+          </div>
+          <div class="field promo">
+            <label for="promo">Promo Code</label>
+            <div><i class="bi bi-ticket-perforated"></i><input id="promo" placeholder="Code (e.g. AUTUMN5)"></div>
+          </div>
+          <div class="field passengers">
+            <label for="passengers">Passengers</label>
+            <div><i class="bi bi-people"></i>
+              <select id="passengers" aria-label="Passengers">
+                <option value="1">1 passenger</option>
+                <option value="2">2 passengers</option>
+                <option value="3">3 passengers</option>
+                <option value="4">4 passengers</option>
+                <option value="5">5 passengers</option>
+                <option value="6">6 passengers</option>
+                <option value="7">7 passengers</option>
+                <option value="8">8 passengers (Minivan)</option>
+                <option value="9">9 passengers</option>
+                <option value="10">10 passengers</option>
+                <option value="12">12 passengers</option>
+                <option value="16">16 passengers (Mercedes Sprinter)</option>
+              </select>
+            </div>
+          </div>
+          <button class="search-button" type="submit">Search Available Vehicles <i class="bi bi-arrow-right"></i></button>
+          <div class="form-bottom">
+            <button type="button" class="add-destination"><i class="bi bi-plus-circle"></i> Add a stop on your journey</button>
+            <span class="form-message" aria-live="polite"></span>
           </div>
         </div>
-        <div class="field">
-          <label for="pickup-date">Pickup Date &amp; Time</label>
-          <div class="field-time-row"><i class="bi bi-calendar-event"></i><input id="pickup-date" type="date" required><input id="pickup-time" type="time" required aria-label="Pickup time"></div>
-        </div>
-        <div class="field">
-          <label for="return-date">Return / Drop Date &amp; Time (Optional)</label>
-          <div class="field-time-row"><i class="bi bi-calendar-plus"></i><input id="return-date" type="date" aria-label="Return date"><input id="return-time" type="time" aria-label="Return time"></div>
-        </div>
-        <div class="field promo">
-          <label for="promo">Promo Code</label>
-          <div><i class="bi bi-ticket-perforated"></i><input id="promo" placeholder="Code (e.g. AUTUMN5)"></div>
-        </div>
-        <div class="field passengers">
-          <label for="passengers">Passengers</label>
-          <div><i class="bi bi-people"></i>
-            <select id="passengers" aria-label="Passengers">
-              <option value="1">1 passenger</option>
-              <option value="2">2 passengers</option>
-              <option value="3">3 passengers</option>
-              <option value="4">4 passengers</option>
-              <option value="5">5 passengers</option>
-              <option value="6">6 passengers</option>
-              <option value="7">7 passengers</option>
-              <option value="8">8 passengers (Minivan)</option>
-              <option value="9">9 passengers</option>
-              <option value="10">10 passengers</option>
-              <option value="12">12 passengers</option>
-              <option value="16">16 passengers (Mercedes Sprinter)</option>
-            </select>
+
+        <div id="map-card-wrapper" class="map-card-wrapper">
+          <div id="route-map" class="route-map"></div>
+          <div class="map-info-bar">
+            <span><i class="bi bi-geo-fill" style="color:#d0ab00"></i> UK Route &amp; Distance Preview</span>
+            <span id="distance-badge" class="distance-badge"><i class="bi bi-speedometer2"></i> Select locations</span>
           </div>
-        </div>
-        <button class="search-button" type="submit">Search Available Vehicles <i class="bi bi-arrow-right"></i></button>
-        <div class="form-bottom">
-          <button type="button" class="add-destination"><i class="bi bi-plus-circle"></i> Add a stop on your journey</button>
-          <span class="form-message" aria-live="polite"></span>
         </div>
       </form>
     </div>
@@ -126,30 +137,28 @@
       <a href="terms.html">Terms &amp; Conditions</a>
     </div>
     <div>
-      <h4>Contact Details</h4>
+      <h4>Company Address</h4>
       <a href="tel:+442039962897"><i class="bi bi-telephone"></i> +44 20 3996 2897</a>
       <a href="mailto:jtransportgroup.ltd@gmail.com"><i class="bi bi-envelope"></i> jtransportgroup.ltd@gmail.com</a>
       <p style="font-size:10.5px;color:#bbb;margin-top:6px;"><i class="bi bi-geo-alt"></i> Office 3.40, 6-9 The Square, Stockley Park, UB11 1FW</p>
     </div>
   </div>
   <div class="footer-bottom">
-    <span>Â© 2026 J Transport Group LTD. All rights reserved. Â· <a href="terms.html" style="color:#f6c400;text-decoration:underline;">Terms &amp; Conditions</a></span>
+    <span>© 2026 J Transport Group LTD. All rights reserved. · <a href="terms.html" style="color:#f6c400;text-decoration:underline;">Terms &amp; Conditions</a></span>
     <div class="license-box">
-      
-      Licence Holder: <b>J TRANSPORT GROUP LTD</b> Â· Licence Number: <b>01103601</b><br>
+      <strong>Transport for London (TfL) Licence Company</strong><br>
+      Licence Holder: <b>J TRANSPORT GROUP LTD</b><br>
       Trading at: Office 3.40, 6-9 The Square, Stockley Park, UB11 1FW<br>
-      Trading as: FCHW Chauffeur Services Â· Valid: 24 September 2024 to 23 September 2029
+      Trading as: FCHW Chauffeur Services
     </div>
   </div>
 </footer>
 
 <a class="whatsapp-float" href="https://wa.me/442039962897" aria-label="WhatsApp J Transport Group LTD"><i class="bi bi-whatsapp"></i></a>
 <button class="chat-float" aria-label="Open chat" aria-expanded="false"><i class="bi bi-chat-fill"></i></button>
-<div class="chat-popover" aria-live="polite">Need help? <a href="contact.html">Chat with J Transport Group LTD</a><button type="button" aria-label="Close chat">Ã—</button></div>
+<div class="chat-popover" aria-live="polite">Need help? <a href="contact.html">Chat with J Transport Group LTD</a><button type="button" aria-label="Close chat">×</button></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="assets/js/script.js"></script>
 </body>
 </html>
-
-
