@@ -30,20 +30,29 @@
   </section>
   <section class="mlt-booking" id="booking" aria-labelledby="booking-title">
     <h2 id="booking-title">Book Now in Seconds</h2>
-    <form class="mlt-booking-form" id="booking-form" novalidate>
-      <div class="route-fields">
-        <span class="route-rail" aria-hidden="true"><i></i><i></i></span>
-        <label class="route-field"><span class="visually-hidden">Pick Up Location</span><input id="pickup" name="pickup" placeholder="Pick Up Location or Postcode (e.g., Heathrow, Stockley Park, EC1)" autocomplete="off" required></label>
-        <label class="route-field"><span class="visually-hidden">Drop off Location</span><input id="dropoff" name="dropoff" placeholder="Drop off Location or Postcode (e.g., Gatwick, Central London)" autocomplete="off" required></label>
-        <button class="swap" type="button" aria-label="Swap pickup and drop-off"><i class="bi bi-arrow-down-up"></i></button>
+    <form class="mlt-booking-form has-side-map" id="booking-form" novalidate>
+      <div class="form-inputs-side">
+        <div class="route-fields">
+          <span class="route-rail" aria-hidden="true"><i></i><i></i></span>
+          <label class="route-field"><span class="visually-hidden">Pick Up Location</span><input id="pickup" name="pickup" placeholder="Pick Up Location or Postcode (e.g., Heathrow, Stockley Park, EC1)" autocomplete="off" required></label>
+          <label class="route-field"><span class="visually-hidden">Drop off Location</span><input id="dropoff" name="dropoff" placeholder="Drop off Location or Postcode (e.g., Gatwick, Central London)" autocomplete="off" required></label>
+          <button class="swap" type="button" aria-label="Swap pickup and drop-off"><i class="bi bi-arrow-down-up"></i></button>
+        </div>
+        <div class="date-fields">
+          <div class="compact-field"><img src="assets/images/mlt/calendar.webp" alt=""><span class="visually-hidden">Pickup date and time</span><span class="date-caption">Pickup date time</span><input id="pickup-date" aria-label="Pickup date" name="pickupDate" type="date" required><input id="pickup-time" aria-label="Pickup time" name="pickupTime" type="time" required></div>
+          <div class="compact-field"><img src="assets/images/mlt/calendar.webp" alt=""><span class="visually-hidden">Return date and time</span><span class="date-caption">Return date time</span><input id="return-date" aria-label="Return date" name="returnDate" type="date"><input id="return-time" aria-label="Return time" name="returnTime" type="time"></div>
+        </div>
+        <label class="code-field"><img src="assets/images/mlt/promo.webp" alt=""><span class="visually-hidden">Code (optional)</span><input id="promo" name="promo" placeholder="Code (optional)"></label>
+        <div class="booking-actions"><button type="button" class="add-destination"><img src="assets/images/mlt/add.webp" alt=""> Add another destination</button><button class="search-button" type="submit"><i class="bi bi-search" aria-hidden="true"></i> Search Fares</button></div>
+        <div class="form-message" aria-live="polite"></div>
       </div>
-      <div class="date-fields">
-        <div class="compact-field"><img src="assets/images/mlt/calendar.webp" alt=""><span class="visually-hidden">Pickup date and time</span><span class="date-caption">Pickup date time</span><input id="pickup-date" aria-label="Pickup date" name="pickupDate" type="date" required><input id="pickup-time" aria-label="Pickup time" name="pickupTime" type="time" required></div>
-        <div class="compact-field"><img src="assets/images/mlt/calendar.webp" alt=""><span class="visually-hidden">Return date and time</span><span class="date-caption">Return date time</span><input id="return-date" aria-label="Return date" name="returnDate" type="date"><input id="return-time" aria-label="Return time" name="returnTime" type="time"></div>
+      <div id="map-card-wrapper" class="map-card-wrapper">
+        <div id="route-map" class="route-map"></div>
+        <div class="map-info-bar">
+          <span><i class="bi bi-geo-fill" style="color:#d0ab00"></i> UK Route &amp; Distance Preview</span>
+          <span id="distance-badge" class="distance-badge"><i class="bi bi-speedometer2"></i> Select locations</span>
+        </div>
       </div>
-      <label class="code-field"><img src="assets/images/mlt/promo.webp" alt=""><span class="visually-hidden">Code (optional)</span><input id="promo" name="promo" placeholder="Code (optional)"></label>
-      <div class="booking-actions"><button type="button" class="add-destination"><img src="assets/images/mlt/add.webp" alt=""> Add another destination</button><button class="search-button" type="submit"><i class="bi bi-search" aria-hidden="true"></i> Search Fares</button></div>
-      <div class="form-message" aria-live="polite"></div>
     </form>
   </section>
   
