@@ -493,23 +493,46 @@
     return hash;
   }
 
-    function initMapContainer() {
-    const existingMap = document.querySelector('#map-card-wrapper');
-    if (existingMap) existingMap.remove();
+  function initMapContainer() {
+    const form = document.querySelector('#booking-form');
+    if (!form) return null;
 
-    const formEl = document.querySelector('#booking-form');
-    if (formEl) {
-      formEl.classList.remove('has-side-map');
-      const side = formEl.querySelector('.form-inputs-side');
-      if (side) {
-        while (side.firstChild) {
-          formEl.insertBefore(side.firstChild, side);
-        }
-        side.remove();
+    if (!form.querySelector('.form-inputs-side')) {
+      const inputsWrap = document.createElement('div');
+      inputsWrap.className = 'form-inputs-side';
+      while (form.firstChild) {
+        inputsWrap.appendChild(form.firstChild);
       }
+      form.appendChild(inputsWrap);
     }
 
-    return null;
+    let mapCard = document.querySelector('#map-card-wrapper');
+    if (!mapCard) {
+      mapCard = document.createElement('div');
+      mapCard.id = 'map-card-wrapper';
+      mapCard.className = 'map-card-wrapper';
+      mapCard.innerHTML = `
+        <div id="route-map" class="route-map"></div>
+        <div class="map-info-bar">
+          <span><i class="bi bi-geo-fill" style="color:#d0ab00"></i> UK Route &amp; Distance Preview</span>
+          <span id="distance-badge" class="distance-badge"><i class="bi bi-speedometer2"></i> Select locations</span>
+        </div>
+      `;
+      form.appendChild(mapCard);
+      form.classList.add('has-side-map');
+    }
+
+    const mapEl = document.querySelector('#route-map');
+    if (mapEl && typeof L !== 'undefined' && !leafletMap) {
+      leafletMap = L.map('route-map').setView([51.5074, -0.1278], 10);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(leafletMap);
+    }
+    if (leafletMap) {
+      setTimeout(() => { leafletMap.invalidateSize(); }, 300);
+    }
+    return leafletMap;
   }
 
   function getCoordsForPlace(placeName, inputEl) {
@@ -634,22 +657,71 @@
     return Math.max(1, Math.round(miles * 10) / 10);
   }
 
-    function updateRouteMap() {
+  function updateRouteMap() {
     initMapContainer();
+    if (!leafletMap) return;
 
     const pickupInput = document.querySelector('#pickup');
     const dropoffInput = document.querySelector('#dropoff');
-    const pickupVal = pickupInput?.value.trim() || '';
-    const dropoffVal = dropoffInput?.value.trim() || '';
+    const pickupVal = pickupInput?.value.trim();
+    const dropoffVal = dropoffInput?.value.trim();
 
-    if (path.toLowerCase() === 'booking.html' && form) {
-      clearTimeout(window._autoQuoteTimer);
-      window._autoQuoteTimer = setTimeout(() => {
-        if (pickupVal.length >= 3 && dropoffVal.length >= 3) {
-          form.dispatchEvent(new Event('submit', { cancelable: true }));
-        }
-      }, 600);
+    mapMarkers.forEach(m => leafletMap.removeLayer(m));
+    mapMarkers = [];
+    if (mapPolyline) { leafletMap.removeLayer(mapPolyline); mapPolyline = null; }
+
+    const badge = document.querySelector('#distance-badge');
+
+    if (!pickupVal && !dropoffVal) {
+      if (badge) badge.innerHTML = `<i class="bi bi-speedometer2"></i> Select locations`;
+      return;
     }
+
+    const c1 = pickupVal ? getCoordsForPlace(pickupVal, pickupInput) : null;
+    const c2 = dropoffVal ? getCoordsForPlace(dropoffVal, dropoffInput) : null;
+
+    const bounds = [];
+    if (c1) {
+      const m1 = L.marker([c1.lat, c1.lng]).addTo(leafletMap).bindPopup(`<b>Pickup:</b> ${pickupVal}`);
+      mapMarkers.push(m1);
+      bounds.push([c1.lat, c1.lng]);
+    }
+    if (c2) {
+      const m2 = L.marker([c2.lat, c2.lng]).addTo(leafletMap).bindPopup(`<b>Drop-off:</b> ${dropoffVal}`);
+      mapMarkers.push(m2);
+      bounds.push([c2.lat, c2.lng]);
+    }
+
+    if (c1 && c2) {
+      mapPolyline = L.polyline([[c1.lat, c1.lng], [c2.lat, c2.lng]], { color: '#d0ab00', weight: 4, opacity: 0.8, dashArray: '6, 8' }).addTo(leafletMap);
+      const miles = calculateDistanceMiles(c1, c2);
+      
+      let estPrice = Math.max(45, Math.round((55 + miles * 2.50) * 0.95));
+      const combo = (pickupVal + ' ' + dropoffVal).toLowerCase();
+      if (combo.includes('heathrow')) estPrice = 85.50;
+      else if (combo.includes('gatwick')) estPrice = 104.50;
+      else if (combo.includes('stansted') || combo.includes('luton')) estPrice = 90.25;
+      else if (combo.includes('city airport') || combo.includes('london city')) estPrice = 47.50;
+
+      if (badge) {
+        badge.innerHTML = `<i class="bi bi-geo-alt-fill"></i> ${miles} miles · <b style="color:#0f5313;background:#e2f5e3;padding:2px 8px;border-radius:12px;">Est. Saloon: £${estPrice.toFixed(2)}</b>`;
+      }
+      leafletMap.fitBounds(bounds, { padding: [30, 30] });
+
+      // Auto refresh quotes on booking page when locations change
+      if (path.toLowerCase() === 'booking.html' && form) {
+        clearTimeout(window._autoQuoteTimer);
+        window._autoQuoteTimer = setTimeout(() => {
+          if (pickupVal.length >= 3 && dropoffVal.length >= 3) {
+            form.dispatchEvent(new Event('submit', { cancelable: true }));
+          }
+        }, 600);
+      }
+    } else if (bounds.length) {
+      leafletMap.setView(bounds[0], 11);
+      if (badge) badge.innerHTML = `<i class="bi bi-geo"></i> Location pinned`;
+    }
+    leafletMap.invalidateSize();
   }
 
   
