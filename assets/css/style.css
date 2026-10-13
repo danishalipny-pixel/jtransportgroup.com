@@ -142,8 +142,10 @@
 .autocomplete-item .item-title{font-weight:500;flex:1;min-width:0;word-break:break-word;white-space:normal;line-height:1.4}
 .autocomplete-item .item-tag{font-size:10px;color:#856900;background:#fff1ab;padding:2px 7px;border-radius:10px;font-weight:600;flex-shrink:0;white-space:nowrap}
 
-/* Map Card & Distance Badge */
-.map-card-wrapper,.route-map,.map-info-bar,.distance-badge{display:none!important}
+.map-card-wrapper{margin-top:14px;border:1.5px solid #e7d88e;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,0.06)}
+.route-map{width:100%;height:230px;background:#f4f2ec;z-index:1}
+.map-info-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fffdf2;border-top:1px solid #f1e4a3;font-size:12.5px;font-weight:500;color:#333}
+.distance-badge{display:inline-flex;align-items:center;gap:6px;background:#fff1ab;color:#705700;padding:5px 14px;border-radius:20px;font-weight:600;font-size:12px;border:1px solid #e5d175}
 
 /* Company License Badge */
 .license-box{margin-top:12px;padding:12px 16px;border:1px solid #4a4a44;border-radius:8px;background:#2d2d29;color:#d5d4cb;font-size:10.5px;line-height:1.6}
@@ -206,25 +208,53 @@
   .mlt-booking, .standalone-booking {
     max-width: 1140px;
   }
-  #booking-form.has-side-map{display:block}
+  #booking-form.has-side-map {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 24px;
+    align-items: stretch;
+  }
   .form-inputs-side {
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
-  #map-card-wrapper{display:none!important}
-  .route-map{display:none!important}
+  #map-card-wrapper {
+    margin-top: 0;
+    height: 100%;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    border: 1.5px solid #e5d175;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  }
+  .route-map {
+    flex: 1;
+    min-height: 260px;
+    height: 100%;
+  }
 }
 
 @media (max-width: 991px) {
-  #booking-form.has-side-map{display:block}
+  #booking-form.has-side-map {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
   .form-inputs-side {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
-  #map-card-wrapper{display:none!important}
-  .route-map{display:none!important}
+  #map-card-wrapper {
+    margin-top: 10px;
+    min-height: 220px;
+  }
+  .route-map {
+    height: 220px;
+  }
 }
 
 /* Terms & Conditions Page Layout */
