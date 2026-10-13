@@ -1355,15 +1355,14 @@
       pMinivan8 = t.minivan8;
       pSprinter = t.sprinter;
     } else if (distanceBracket === 'long_distance' || miles > 90) {
-      // Official PDF Page 1: Maximum distance (>90 miles) per-mile rates
-      // Saloon rate is preserved; larger/premium vehicles use their own PDF-listed per-mile rates
-      pSaloon = Math.round(miles * 1.70);
-      pEstate = Math.round(miles * 1.80);
-      pMpv = Math.round(miles * 2.00);
-      pExec = Math.round(miles * 2.00);
-      pMinivan8 = Math.round(miles * 2.70);
-      pExecMpv = Math.round(miles * 3.00);
-      pSprinter = Math.round(miles * 4.50);
+      // Official PDF Page 11 Section 7.1: Long distance (>90 miles) guaranteed per-mile rates
+      pSaloon = Math.round(miles * 1.50);
+      pEstate = Math.round(miles * 1.60);
+      pMpv = Math.round(miles * 1.80);
+      pExec = Math.round(miles * 1.80);
+      pMinivan8 = Math.round(miles * 2.10);
+      pExecMpv = Math.round(miles * 2.30);
+      pSprinter = Math.round(miles * 3.30);
     }
 
     const vehicles = [
@@ -1371,29 +1370,29 @@
         code: 'saloon',
         name: 'Saloon Car',
         image: 'assets/images/saloon.png',
-        luggage: 'Up to 2 Large Suitcases',
+        luggage: 'Up to 2 Large Suitcases + 2 Small Bags',
         examples: 'Toyota Corolla, VW Golf, Prius',
         breakdown: makeBreakdown(pSaloon)
       },
       {
         code: 'estate',
-        name: 'Estate Car',
+        name: 'Executive Estate',
         image: 'assets/images/estate.png',
-        luggage: 'Up to 3 Large Suitcases',
+        luggage: 'Up to 3 Large Suitcases + 2 Small Bags',
         examples: 'VW Passat Estate, Skoda Superb',
         breakdown: makeBreakdown(pEstate)
       },
       {
         code: 'mpv',
-        name: 'MPV (People Carrier)',
+        name: 'MPV (5 Seater)',
         image: 'assets/images/mpv.png',
-        luggage: 'Up to 4 Large Suitcases',
+        luggage: 'Up to 4 Large Suitcases + 3 Small Bags',
         examples: 'VW Multivan or Ford Tourneo',
         breakdown: makeBreakdown(pMpv)
       },
       {
         code: 'executive',
-        name: 'Executive Saloon',
+        name: 'Business Class / Executive Saloon',
         image: 'assets/images/executive-saloon.png',
         luggage: 'Premium Leather Interior',
         examples: 'Mercedes-Benz E-Class, BMW 5 Series',
@@ -1404,20 +1403,20 @@
         name: 'Executive MPV (6 Seater)',
         image: 'assets/images/mpv-plus.png',
         luggage: 'Luxury Chauffeur Minivan',
-        examples: 'Mercedes-Benz V-Class',
+        examples: 'Mercedes-Benz V-Class Extra-Long',
         breakdown: makeBreakdown(pExecMpv)
       },
       {
         code: 'minivan8',
-        name: '8 Seater Minivan',
+        name: 'Minivan 8-Seater (MPV8)',
         image: 'assets/images/minivan.png',
         luggage: 'Up to 8 Large Suitcases',
-        examples: 'Mercedes-Benz Vito 8 Seater',
+        examples: 'Mercedes-Benz Vito 8 Seater, Ford Tourneo',
         breakdown: makeBreakdown(pMinivan8)
       },
       {
         code: 'sprinter',
-        name: 'Mercedes Sprinter',
+        name: 'Mercedes Sprinter (14–16 Seater)',
         image: 'assets/images/14-seater.png',
         luggage: 'Up to 16 Luggage Pieces',
         examples: 'Luxury Minibus for Group Travel',
