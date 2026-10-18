@@ -147,15 +147,17 @@ function buildTrip(data) {
   } catch (error) {
     throw new HttpError(400, error.message);
   }
+  const distanceMiles = Number(data.distanceMiles || data.miles) || null;
   let vehicles;
   try {
-    vehicles = quoteVehicles({ pickup, dropoff, passengers, returnAt, discountPercent });
+    vehicles = quoteVehicles({ pickup, dropoff, passengers, returnAt, discountPercent, distanceMiles });
   } catch (error) {
     throw new HttpError(400, error.message);
   }
   return {
     pickup,
     dropoff,
+    distanceMiles: vehicles[0]?.distanceMiles || distanceMiles,
     via: String(data.via || "").trim(),
     pickup_at: formatLondonIso(pickupAt),
     return_at: returnAt ? formatLondonIso(returnAt) : null,
@@ -231,10 +233,10 @@ export function loadQuote(db, quoteId) {
     } catch {
       defaultVehicles = [
         { code: 'saloon', name: 'Saloon Car', breakdown: { totalPence: 8550 } },
-        { code: 'estate', name: 'Estate Car', breakdown: { totalPence: 9550 } },
-        { code: 'mpv', name: 'MPV (5 Seater)', breakdown: { totalPence: 11050 } },
+        { code: 'estate', name: 'Estate', breakdown: { totalPence: 9550 } },
+        { code: 'mpv', name: 'MPV (People Carrier)', breakdown: { totalPence: 11050 } },
         { code: 'executive', name: 'Executive Saloon', breakdown: { totalPence: 11550 } },
-        { code: 'exec-mpv', name: 'Executive MPV (6 Seater)', breakdown: { totalPence: 14550 } },
+        { code: 'exec-mpv', name: 'Executive MPV', breakdown: { totalPence: 14550 } },
         { code: 'minivan8', name: '8 Seater Minivan', breakdown: { totalPence: 13050 } }
       ];
     }
@@ -272,13 +274,72 @@ export function loadQuote(db, quoteId) {
   };
 }
 
+export function getNextBookingReference(db) {
+  const BASE_SERIAL = 28124423;
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS booking_sequence (
+        name TEXT PRIMARY KEY,
+        last_seq INTEGER NOT NULL
+      );
+    `);
+
+    const rows = db.prepare(`
+      SELECT reference FROM bookings 
+      WHERE reference LIKE 'JTG-%'
+    `).all();
+
+    let maxFound = BASE_SERIAL - 1;
+    for (const r of rows) {
+      if (!r || !r.reference) continue;
+      const m = r.reference.match(/^JTG-(\d+)$/);
+      if (m) {
+        const val = parseInt(m[1], 10);
+        if (!isNaN(val) && val > maxFound) {
+          maxFound = val;
+        }
+      }
+    }
+
+    db.prepare(`
+      INSERT INTO booking_sequence (name, last_seq)
+      VALUES ('booking_ref', ?)
+      ON CONFLICT(name) DO UPDATE SET
+        last_seq = MAX(booking_sequence.last_seq, excluded.last_seq)
+    `).run(maxFound);
+
+    db.prepare(`
+      UPDATE booking_sequence
+      SET last_seq = last_seq + 1
+      WHERE name = 'booking_ref'
+    `).run();
+
+    const current = db.prepare("SELECT last_seq FROM booking_sequence WHERE name = 'booking_ref'").get();
+    if (current && current.last_seq) {
+      return `JTG-${current.last_seq}`;
+    }
+  } catch (err) {
+    console.error("[REFERENCE SEQUENCE ERROR]", err);
+  }
+
+  return `JTG-${BASE_SERIAL}`;
+}
+
 export function createBooking(db, data, user) {
   const quote = loadQuote(db, data.quoteId);
-  const vehicle = quote.vehicles.find((item) => item.code === data.vehicle);
+  const vehicle = quote.vehicles.find((item) => 
+    item.code === data.vehicle ||
+    (data.vehicle === 'exec-mpv' && item.code === 'exec_mpv') ||
+    (data.vehicle === 'exec_mpv' && item.code === 'exec-mpv') ||
+    (data.vehicle === 'minivan8' && item.code === 'mpv8') ||
+    (data.vehicle === 'mpv8' && item.code === 'minivan8') ||
+    (data.vehicle === 'mpv' && item.code === 'mpv5') ||
+    (data.vehicle === 'mpv5' && item.code === 'mpv')
+  );
   if (!vehicle) throw new HttpError(400, "Choose one of the vehicles from this quote.");
   const trip = quote.trip;
   const id = crypto.randomUUID();
-  const reference = `JTG-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+  const reference = getNextBookingReference(db);
   const cancelToken = crypto.randomBytes(24).toString("base64url");
   const created = nowIso();
   db.prepare(

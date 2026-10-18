@@ -56,6 +56,11 @@ export function openDatabase(file) {
       event_type TEXT NOT NULL,
       created_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS booking_sequence (
+      name TEXT PRIMARY KEY,
+      last_seq INTEGER NOT NULL
+    );
+    INSERT OR IGNORE INTO booking_sequence (name, last_seq) VALUES ('booking_ref', 28124422);
   `);
   try {
     db.exec(`ALTER TABLE bookings ADD COLUMN email_sent_at TEXT;`);

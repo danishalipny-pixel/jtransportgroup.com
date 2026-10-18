@@ -48,13 +48,29 @@ export function openDatabase(file) {
       stripe_payment_intent TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
-      paid_at TEXT
+      paid_at TEXT,
+      email_sent_at TEXT
     );
     CREATE TABLE IF NOT EXISTS payment_events (
       event_id TEXT PRIMARY KEY,
       event_type TEXT NOT NULL,
       created_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS booking_sequence (
+      name TEXT PRIMARY KEY,
+      last_seq INTEGER NOT NULL
+    );
+    INSERT OR IGNORE INTO booking_sequence (name, last_seq) VALUES ('booking_ref', 28124422);
   `);
+  try {
+    db.exec(`ALTER TABLE bookings ADD COLUMN email_sent_at TEXT;`);
+  } catch {
+    // Column already exists
+  }
+  try {
+    db.exec(`ALTER TABLE bookings ADD COLUMN request_email_sent_at TEXT;`);
+  } catch {
+    // Column already exists
+  }
   return db;
 }

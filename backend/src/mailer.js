@@ -25,7 +25,7 @@ export async function sendBookingEmails(booking, paymentTypeOverride = null) {
     return { ok: false, sent: false, passengerSent: false, companySent: false, error: "No booking data provided" };
   }
 
-  const reference = booking.reference || "JTG-" + Date.now();
+  const reference = booking.reference || "JTG-28124423";
   const status = (booking.status || "").toLowerCase();
   const isPayInCar = paymentTypeOverride === "cash" || paymentTypeOverride === "pay_in_car" || status === "cash_on_arrival";
   const isPayByCard = paymentTypeOverride === "card" || paymentTypeOverride === "pay_by_card" || status === "paid";
@@ -35,7 +35,7 @@ export async function sendBookingEmails(booking, paymentTypeOverride = null) {
     return { ok: true, sent: false, passengerSent: false, companySent: false, note: "Waiting for payment completion or cash selection." };
   }
 
-  const companyEmail = process.env.COMPANY_EMAIL || "jtransportgroup.ltd@gmail.com";
+  const companyEmail = process.env.COMPANY_EMAIL || "info@jtransportgroup.com";
   const amountPence = Number(booking.amount_pence || booking.amountPence || 0);
   const pounds = "£" + (amountPence / 100).toFixed(2);
   const currency = (booking.currency || "GBP").toUpperCase();
