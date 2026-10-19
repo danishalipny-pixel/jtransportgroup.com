@@ -674,9 +674,10 @@ export function createApp(options = {}) {
 }
 
 const isMain =
-  process.argv[1] &&
-  path.resolve(process.argv[1]) ===
-    fileURLToPath(import.meta.url);
+  process.env.pm_id !== undefined ||
+  (process.argv[1] &&
+    path.resolve(process.argv[1]) ===
+      fileURLToPath(import.meta.url));
 
 if (isMain) {
   const port = Number(
