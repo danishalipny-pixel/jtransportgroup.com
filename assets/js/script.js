@@ -27,8 +27,16 @@
 
   document.querySelectorAll('.desktop-nav a,.mobile-nav a').forEach(link => {
     const href = link.getAttribute('href') || '';
-    if (href === path) link.classList.add('active');
+    if (href === path || (href === '/' && (path === '' || path === 'index.html'))) {
+      link.classList.add('active');
+    }
   });
+
+  if (location.protocol === 'file:') {
+    document.querySelectorAll('a[href="/"]').forEach(link => {
+      link.setAttribute('href', 'index.html');
+    });
+  }
 
   document.querySelectorAll('.desktop-nav a').forEach(link => {
     if (!link.querySelector('.bi-chevron-down')) return;
@@ -524,10 +532,8 @@
 
     const mapEl = document.querySelector('#route-map');
     if (mapEl && typeof L !== 'undefined' && !leafletMap) {
-      leafletMap = L.map('route-map').setView([51.5074, -0.1278], 10);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(leafletMap);
+      leafletMap = L.map('route-map', { attributionControl: false }).setView([51.5074, -0.1278], 10);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(leafletMap);
     }
     if (leafletMap) {
       setTimeout(() => { leafletMap.invalidateSize(); }, 300);
@@ -704,7 +710,7 @@
       else if (combo.includes('city airport') || combo.includes('london city')) estPrice = 47.50;
 
       if (badge) {
-        badge.innerHTML = `<i class="bi bi-geo-alt-fill"></i> ${miles} miles · <b style="color:#0f5313;background:#e2f5e3;padding:2px 8px;border-radius:12px;">Est. Saloon: £${estPrice.toFixed(2)}</b>`;
+        badge.innerHTML = `<i class="bi bi-geo-alt-fill"></i> ${miles} miles`;
       }
       leafletMap.fitBounds(bounds, { padding: [30, 30] });
 
@@ -1228,16 +1234,30 @@
     const expiresMs = nowMs + 15 * 60 * 1000;
     const quoteId = 'q_' + nowMs + '_' + Math.random().toString(36).substring(2, 8);
 
+    const isFestivalDate = (pDate) => {
+      if (!pDate) return false;
+      const str = String(pDate).trim();
+      const match = str.match(/(\d{2}-\d{2})$/);
+      if (!match) return false;
+      const mmdd = match[1];
+      return ['12-24', '12-25', '12-26', '12-28', '12-31', '01-01', '03-20', '03-21', '03-22', '04-03', '04-06', '05-04', '05-25', '05-27', '05-28', '05-29', '08-31'].includes(mmdd);
+    };
+    const isFest = isFestivalDate(info.pickupDate || info.date);
+    const festMult = isFest ? 1.65 : 1.0;
+
     const makeBreakdown = (vehBase) => {
-      let oneWayVal = vehBase;
+      let oneWayVal = vehBase * festMult;
       if (info.returnDate) {
-        oneWayVal = vehBase;
+        oneWayVal = vehBase * festMult;
       }
       const oneWay = Math.round(oneWayVal * 100);
       const retOrig = oneWay * 2;
       const retTot = Math.round(retOrig * 0.95);
       const retSave = retOrig - retTot;
       return {
+        isFestival: isFest,
+        festivalEventName: isFest ? 'Holiday Festival' : null,
+        festivalIncreasePercent: isFest ? 65 : 0,
         totalPence: oneWay,
         oneWayTotalPence: oneWay,
         returnOriginalPence: retOrig,
@@ -1355,15 +1375,14 @@
       pMinivan8 = t.minivan8;
       pSprinter = t.sprinter;
     } else if (distanceBracket === 'long_distance' || miles > 90) {
-      // Official PDF Page 1: Maximum distance (>90 miles) per-mile rates
-      // Saloon rate is preserved; larger/premium vehicles use their own PDF-listed per-mile rates
-      pSaloon = Math.round(miles * 1.70);
-      pEstate = Math.round(miles * 1.80);
-      pMpv = Math.round(miles * 2.00);
-      pExec = Math.round(miles * 2.00);
-      pMinivan8 = Math.round(miles * 2.70);
-      pExecMpv = Math.round(miles * 3.00);
-      pSprinter = Math.round(miles * 4.50);
+      // Official PDF Page 11 Section 7.1: Long distance (>90 miles) guaranteed per-mile rates
+      pSaloon = Math.round(miles * 1.50);
+      pEstate = Math.round(miles * 1.60);
+      pMpv = Math.round(miles * 1.80);
+      pExec = Math.round(miles * 1.80);
+      pMinivan8 = Math.round(miles * 2.10);
+      pExecMpv = Math.round(miles * 2.30);
+      pSprinter = Math.round(miles * 3.30);
     }
 
     const vehicles = [
@@ -1371,15 +1390,15 @@
         code: 'saloon',
         name: 'Saloon Car',
         image: 'assets/images/saloon.png',
-        luggage: 'Up to 2 Large Suitcases',
+        luggage: 'Up to 2 Large Suitcases + 2 Small Bags',
         examples: 'Toyota Corolla, VW Golf, Prius',
         breakdown: makeBreakdown(pSaloon)
       },
       {
         code: 'estate',
-        name: 'Estate Car',
+        name: 'Executive Estate',
         image: 'assets/images/estate.png',
-        luggage: 'Up to 3 Large Suitcases',
+        luggage: 'Up to 3 Large Suitcases + 2 Small Bags',
         examples: 'VW Passat Estate, Skoda Superb',
         breakdown: makeBreakdown(pEstate)
       },
@@ -1387,13 +1406,13 @@
         code: 'mpv',
         name: 'MPV (People Carrier)',
         image: 'assets/images/mpv.png',
-        luggage: 'Up to 4 Large Suitcases',
+        luggage: 'Up to 4 Large Suitcases + 3 Small Bags',
         examples: 'VW Multivan or Ford Tourneo',
         breakdown: makeBreakdown(pMpv)
       },
       {
         code: 'executive',
-        name: 'Executive Saloon',
+        name: 'Business Class / Executive Saloon',
         image: 'assets/images/executive-saloon.png',
         luggage: 'Premium Leather Interior',
         examples: 'Mercedes-Benz E-Class, BMW 5 Series',
@@ -1401,23 +1420,23 @@
       },
       {
         code: 'exec-mpv',
-        name: 'Executive MPV (6 Seater)',
+        name: 'Executive MPV',
         image: 'assets/images/mpv-plus.png',
-        luggage: 'Luxury Chauffeur Minivan',
-        examples: 'Mercedes-Benz V-Class',
+        luggage: 'Up to 7 Large Suitcases + 7 Small Bags',
+        examples: 'Mercedes-Benz V-Class Extra-Long',
         breakdown: makeBreakdown(pExecMpv)
       },
       {
         code: 'minivan8',
-        name: '8 Seater Minivan',
+        name: 'Minivan 8-Seater (MPV8)',
         image: 'assets/images/minivan.png',
         luggage: 'Up to 8 Large Suitcases',
-        examples: 'Mercedes-Benz Vito 8 Seater',
+        examples: 'Mercedes-Benz Vito 8 Seater, Ford Tourneo',
         breakdown: makeBreakdown(pMinivan8)
       },
       {
         code: 'sprinter',
-        name: 'Mercedes Sprinter',
+        name: 'Mercedes Sprinter (14–16 Seater)',
         image: 'assets/images/14-seater.png',
         luggage: 'Up to 16 Luggage Pieces',
         examples: 'Luxury Minibus for Group Travel',
@@ -1496,7 +1515,10 @@
       const price =
         document.createElement('strong');
       price.className = 'quote-price';
-      price.textContent = pounds(oneWayPence);
+      const festivalBadge = bd.isFestival
+        ? ` <span class="festival-tag" style="background:#fff3cd;color:#856404;font-size:11px;padding:3px 8px;border-radius:12px;font-weight:600;display:inline-block;margin-left:6px;"><i class="bi bi-stars"></i> ${bd.festivalEventName || 'Holiday Fare'} (+65%)</span>`
+        : '';
+      price.innerHTML = pounds(oneWayPence) + festivalBadge;
 
       copy.append(
         heading,
@@ -2096,6 +2118,29 @@
       .forEach(element =>
         element.classList.add('visible')
       );
+  }
+
+  // Automatic Rotating Tagline (3s continuous loop)
+  const taglines = [
+    "Your Comfort. Your Time. Our Promise.",
+    "Every Journey. First-Class Comfort.",
+    "Your Journey, Our Priority."
+  ];
+
+  const taglineElements = document.querySelectorAll(".hero-promise, #hero-tagline, #booking-tagline");
+  if (taglineElements.length > 0 && !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+    let taglineIndex = 0;
+    setInterval(() => {
+      taglineElements.forEach(el => el.classList.add("hero-rotator-fade"));
+
+      setTimeout(() => {
+        taglineIndex = (taglineIndex + 1) % taglines.length;
+        taglineElements.forEach(el => {
+          el.textContent = taglines[taglineIndex];
+          el.classList.remove("hero-rotator-fade");
+        });
+      }, 350);
+    }, 3000);
   }
 
 })();

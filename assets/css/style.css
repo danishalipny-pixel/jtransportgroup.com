@@ -946,3 +946,13 @@
     max-height: 120px;
   }
 }
+
+/* Smooth Tagline Fade Transition */
+.hero-promise {
+  display: inline-block;
+  transition: opacity 0.35s ease-in-out, transform 0.35s ease-in-out;
+}
+.hero-rotator-fade {
+  opacity: 0 !important;
+  transform: translateY(-2px);
+}

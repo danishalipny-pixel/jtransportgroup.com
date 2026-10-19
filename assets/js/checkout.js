@@ -26,9 +26,9 @@
   const VEHICLE_CATALOG = {
     saloon: { name: 'Saloon Car', price: 85.50, desc: 'Up to 2 Large Suitcases · Toyota Corolla, VW Golf, Prius' },
     estate: { name: 'Estate Car', price: 95.50, desc: 'Up to 3 Large Suitcases · VW Passat Estate, Skoda Superb' },
-    mpv: { name: 'MPV (5 Seater)', price: 110.50, desc: 'Up to 4 Large Suitcases · VW Multivan or Ford Tourneo' },
+    mpv: { name: 'MPV (People Carrier)', price: 110.50, desc: 'Up to 4 Large Suitcases · VW Multivan or Ford Tourneo' },
     executive: { name: 'Executive Saloon', price: 115.50, desc: 'Premium Leather Interior · Mercedes-Benz E-Class, BMW 5 Series' },
-    'exec-mpv': { name: 'Executive MPV (6 Seater)', price: 145.50, desc: 'Luxury Chauffeur Minivan · Mercedes-Benz V-Class' },
+    'exec-mpv': { name: 'Executive MPV', price: 145.50, desc: 'Up to 7 Large Suitcases + 7 Small Bags · Mercedes-Benz V-Class' },
     minivan8: { name: '8 Seater Minivan', price: 130.50, desc: 'Up to 8 Large Suitcases · Mercedes-Benz Vito 8 Seater' }
   };
 
@@ -56,11 +56,22 @@
     const retTime = (trip.return_at || trip.returnAt || '').replace('T', ' ').slice(0, 16);
     when.textContent = 'Pickup: ' + pickTime + (retTime ? ' · Return: ' + retTime : ' · One way');
     
+    const bookingType = params.get('type') || (trip.return_at ? 'return' : 'oneway');
+    const isReturn = bookingType === 'return' || Boolean(trip.return_at);
+    const amountPence = isReturn
+      ? (veh.breakdown?.returnTotalPence || veh.breakdown?.totalPence)
+      : (veh.breakdown?.oneWayTotalPence || veh.breakdown?.totalPence);
+    
+    const festNote = veh.breakdown?.isFestival
+      ? ` · ${veh.breakdown.festivalEventName || 'Holiday'} Fare (+65%)`
+      : '';
+    const tripNote = isReturn ? ' · Return Trip (5% Discount applied)' : ' · One way';
+
     const chosen = document.createElement('p');
     chosen.style.fontSize = '15px';
     chosen.style.fontWeight = '700';
     chosen.style.color = '#b08d00';
-    chosen.textContent = veh.name + ' · ' + (trip.passengers || 1) + ' Passengers · ' + pounds(veh.breakdown.totalPence);
+    chosen.textContent = veh.name + ' · ' + (trip.passengers || 1) + ' Passengers · ' + pounds(amountPence) + tripNote + festNote;
     
     summary.append(route, when, chosen);
     form.hidden = false;
@@ -169,6 +180,8 @@
         body: {
           quoteId: effectiveQuoteId,
           vehicle: vehicle?.code || effectiveVehicleCode,
+          bookingType: params.get('type') || 'oneway',
+          type: params.get('type') || 'oneway',
           name: document.querySelector('#name').value,
           email: document.querySelector('#email').value,
           phone: document.querySelector('#phone').value,

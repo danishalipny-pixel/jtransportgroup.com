@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#fffdf5">
+  <meta name="description" content="Luxury private transfers to and from UK cruise ports and ferry terminals with J Transport Group LTD. Door-to-door chauffeur services to Southampton, Dover, Tilbury, Portsmouth, and Poole.">
+  <title>Ports | UK Seaport &amp; Cruise Transfers | J Transport Group LTD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <style>
+    .ports-hero {
+      position: relative;
+      background: linear-gradient(135deg, rgba(15, 20, 29, 0.94) 0%, rgba(24, 30, 42, 0.88) 100%), url('assets/ports/tilbury/view-1.jpg') center/cover no-repeat;
+      color: #fff;
+      padding: 85px 20px 75px;
+      text-align: center;
+      border-bottom: 3px solid #d0ab00;
+    }
+    .ports-hero .hero-inner {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .ports-hero .section-kicker {
+      background: rgba(208, 171, 0, 0.2);
+      color: #f6c400;
+      border: 1px solid #d0ab00;
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .ports-hero h1 {
+      font-size: clamp(34px, 5vw, 52px);
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 14px;
+      line-height: 1.15;
+    }
+    .ports-hero h1 em {
+      color: #f6c400;
+      font-style: normal;
+    }
+    .ports-hero p {
+      font-size: 16px;
+      color: #e2e1d7;
+      max-width: 680px;
+      margin: 0 auto 24px;
+      line-height: 1.7;
+    }
+    .ports-trust-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .ports-trust-pills span {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #f5f4ee;
+    }
+    .ports-trust-pills span i {
+      color: #f6c400;
+      margin-right: 5px;
+    }
+    .port-grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+      margin-top: 35px;
+    }
+    .port-card {
+      background: #ffffff;
+      border: 1.5px solid #e8e6db;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .port-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(208, 171, 0, 0.18);
+      border-color: #d0ab00;
+    }
+    .port-card-img-wrap {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+      background: #14171f;
+    }
+    .port-card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .port-card:hover .port-card-img-wrap img {
+      transform: scale(1.05);
+    }
+    .port-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(20, 23, 31, 0.9);
+      color: #f6c400;
+      border: 1px solid #d0ab00;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+    .port-card-body {
+      padding: 24px 22px 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .port-card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a18;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .port-location-tag {
+      font-size: 12px;
+      color: #8c7600;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .port-short-desc {
+      font-size: 13.5px;
+      color: #555555;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      flex-grow: 1;
+    }
+    .port-highlights-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+      background: #fffdf5;
+      border: 1px solid #f0e6ba;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      color: #333;
+    }
+    .port-highlights-list li {
+      padding: 3px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .port-highlights-list li i {
+      color: #d0ab00;
+      font-size: 13px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .port-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid #f0ede1;
+    }
+    .port-card-actions .pill-link {
+      flex: 1;
+      text-align: center;
+      justify-content: center;
+      font-size: 12.5px;
+      padding: 9px 12px;
+    }
+    .port-card-actions .yellow-pill {
+      flex: 1;
+      text-align: center;
+      justify-content: center;
+      font-size: 12.5px;
+      padding: 9px 12px;
+    }
+    .fleet-guarantee-bar {
+      background: #14171f;
+      color: #fff;
+      border-top: 2px solid #d0ab00;
+      border-bottom: 2px solid #d0ab00;
+      padding: 35px 20px;
+      margin: 40px 0 0;
+    }
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-shell">
+    <a class="brand" href="index.html" aria-label="J Transport Group LTD home">
+      <img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD — Book and Ride">
+    </a>
+    <a class="header-phone" href="tel:+442039962897"><i class="bi bi-telephone-fill"></i> +44 20 3996 2897</a>
+    <nav class="desktop-nav">
+      <a href="/">Home</a>
+      <a href="services.html">Services <i class="bi bi-chevron-down"></i></a>
+      <a href="ports.html" class="active">Ports</a>
+      <a href="fleet.html">Fleet</a>
+      <a href="blogs.html">Blogs</a>
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <a class="signin" href="account.html">Sign In <i class="bi bi-arrow-up-right"></i></a>
+    <button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="mobile-nav">
+    <a href="/">Home</a>
+    <a href="services.html">Services</a>
+    <a href="ports.html" class="active">Ports</a>
+    <a href="fleet.html">Fleet</a>
+    <a href="blogs.html">Blogs</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html">Contact</a>
+    <a href="booking.html">Book Now</a>
+  </nav>
+</header>
+
+<main>
+  <!-- HERO SECTION -->
+  <section class="ports-hero">
+    <div class="hero-inner">
+      <span class="section-kicker"><i class="bi bi-compass"></i> UK SEAPORT &amp; CRUISE TRANSFERS</span>
+      <h1>Private Chauffeur <em>Port Transfers</em></h1>
+      <p>Luxury door-to-door transportation connecting major UK passenger ports and cruise terminals with London Heathrow, Gatwick Airport, Central London hotels, and nationwide destinations.</p>
+      <div class="ports-trust-pills">
+        <span><i class="bi bi-shield-check"></i> TfL Licensed Operator 01103601</span>
+        <span><i class="bi bi-clock-history"></i> 24/7 Cruise &amp; Flight Tracking</span>
+        <span><i class="bi bi-person-badge"></i> Complimentary Meet &amp; Greet</span>
+        <span><i class="bi bi-tag-fill"></i> Fixed Transparent Fares</span>
+      </div>
+      <div>
+        <a href="#ports-list" class="yellow-pill" style="font-size:14px;padding:12px 28px;font-weight:700;">Explore All Ports <i class="bi bi-arrow-down"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTS LISTING GRID -->
+  <section class="services-section section-pad" id="ports-list" style="background:#fffdfa;">
+    <div class="container" style="max-width:1200px;margin:0 auto;padding:0 15px;">
+      <div class="section-heading text-center" style="max-width:750px;margin:0 auto 30px;">
+        <span class="section-kicker">PASSENGER SEAPORT DIRECTORY</span>
+        <h2 style="font-size:32px;font-weight:800;color:#1f2023;margin:8px 0 10px;">UK Cruise &amp; Ferry <em>Ports</em></h2>
+        <p style="color:#666;font-size:14.5px;line-height:1.7;">Pre-booked private transport for cruise voyagers, ferry travelers, families, and executive groups. Select a port below to view detailed terminal facilities, visual portfolios, and route information.</p>
+      </div>
+
+      <div class="port-grid-container" id="ports-grid">
+        <div class="port-card">
+          <div class="port-card-img-wrap">
+            <span class="port-badge"><i class="bi bi-water"></i> PREMIER UK CRUISE HUB</span>
+            <img src="assets/ports/southampton/view-1.jpg" alt="Southampton Cruise Port Transfers" loading="lazy">
+          </div>
+          <div class="port-card-body">
+            <h3 class="port-card-title">Southampton Cruise Port Transfers</h3>
+            <div class="port-location-tag"><i class="bi bi-geo-alt-fill"></i> Southampton, Hampshire · South Coast</div>
+            <p class="port-short-desc">Connecting all 5 Southampton Cruise Terminals (Horizon, Mayflower, Ocean, City, QEII) with London Heathrow, Gatwick Airport, Central London hotels, and UK addresses.</p>
+            <ul class="port-highlights-list">
+              <li><i class="bi bi-check-circle-fill"></i> <div><b>All 5 Terminals Covered:</b> Direct drop-off and pickup at Horizon, Mayflower, Ocean, City, and Queen Elizabeth II terminals.</div></li><li><i class="bi bi-check-circle-fill"></i> <div><b>Airport Connections:</b> Punctual private transfers to London Heathrow (~65 miles / 75 mins) and Gatwick (~85 miles / 90 mins).</div></li><li><i class="bi bi-check-circle-fill"></i> <div><b>Cruise & Flight Monitoring:</b> Complimentary meet and greet inside terminal arrivals with live docking and flight delay tracking.</div></li>
+            </ul>
+            <div class="port-card-actions">
+              <a href="port-detail.html?port=southampton" class="pill-link">View Details <i class="bi bi-arrow-right"></i></a>
+              <a href="booking.html?dropoff=Southampton%20Cruise%20Port,%20Hampshire" class="yellow-pill">Book Transfer <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="port-card">
+          <div class="port-card-img-wrap">
+            <span class="port-badge"><i class="bi bi-water"></i> WHITE CLIFFS MARITIME HUB</span>
+            <img src="assets/ports/dover/view-1.jpg" alt="Dover Port Transfers" loading="lazy">
+          </div>
+          <div class="port-card-body">
+            <h3 class="port-card-title">Dover Port Transfers</h3>
+            <div class="port-location-tag"><i class="bi bi-geo-alt-fill"></i> Dover, Kent · English Channel Gateway</div>
+            <p class="port-short-desc">Pre-booked private transfers for ferry and cruise passengers at the Port of Dover, connecting directly with Central London, Heathrow, Gatwick, and regional hotels.</p>
+            <ul class="port-highlights-list">
+              <li><i class="bi bi-check-circle-fill"></i> <div><b>Ferry & Cruise Docks:</b> Direct chauffeur access to both Eastern Ferry Docks and Western Cruise Terminals 1 & 2.</div></li><li><i class="bi bi-check-circle-fill"></i> <div><b>Cross-Country Links:</b> Smooth motorway journeys via M20/A2 to London Heathrow, London City, and Gatwick Airport.</div></li><li><i class="bi bi-check-circle-fill"></i> <div><b>Meet & Greet Included:</b> Drivers welcome passengers inside terminal arrival lounges with flight and ferry tracking.</div></li>
+            </ul>
+            <div class="port-card-actions">
+              <a href="port-detail.html?port=dover" class="pill-link">View Details <i class="bi bi-arrow-right"></i></a>
+              <a href="booking.html?dropoff=Port%20of%20Dover,%20Kent" class="yellow-pill">Book Transfer <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="port-card">
+          <div class="port-card-img-wrap">
+            <span class="port-badge"><i class="bi bi-water"></i> LONDON'S HISTORIC CRUISE PORT</span>
+            <img src="assets/ports/tilbury/view-1.jpg" alt="Tilbury Port Transfers" loading="lazy">
+          </div>
+          <div class="port-card-body">
+            <h3 class="port-card-title">Tilbury Port Transfers</h3>
+            <div class="port-location-tag"><i class="bi bi-geo-alt-fill"></i> Tilbury, Essex · River Thames & London Gateway</div>
+            <p class="port-short-desc">Dedicated private transfer service to the London Cruise Terminal at Tilbury, situated just 25 miles downriver from Central London.</p>
+            <ul class="port-highlights-list">
+              <li><i class="bi bi-check-circle-fill"></i> <div><b>Closest Port to London:</b> Located only ~25 miles east of Central London and 22 miles from London City Airport.</div></li><li><i class="bi bi-check-circle-fill"></i> <div><b>Direct M25 Corridor:</b> Swift motorway connections via A13 and M25 to Stansted, Heathrow, and Gatwick airports.</div></li><li><i class="bi bi-check-circle-fill"></i> <div><b>Historic Cruise Terminal:</b> Seamless curb-to-baggage service right at the Grade II listed passenger terminal lounge.</div></li>
+            </ul>
+            <div class="port-card-actions">
+              <a href="port-detail.html?port=tilbury" class="pill-link">View Details <i class="bi bi-arrow-right"></i></a>
+              <a href="booking.html?dropoff=Port%20of%20Tilbury%20London%20Cruise%20Terminal,%20Essex" class="yellow-pill">Book Transfer <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="port-card">
+          <div class="port-card-img-wrap">
+            <span class="port-badge"><i class="bi bi-water"></i> INTERNATIONAL FERRY & BOUTIQUE CRUISE</span>
+            <img src="assets/ports/portsmouth/view-1.jpg" alt="Portsmouth International Port Transfers" loading="lazy">
+          </div>
+          <div class="port-card-body">
+            <h3 class="port-card-title">Portsmouth International Port Transfers</h3>
+            <div class="port-location-tag"><i class="bi bi-geo-alt-fill"></i> Portsmouth, Hampshire · Solent & Channel Crossing</div>
+            <p class="port-short-desc">Reliable private door-to-door transportation for cruise passengers and cross-Channel ferry travelers heading to France, Spain, and the Channel Islands.</p>
+            <ul class="port-highlights-list">
+              <li><i class="bi bi-check-circle-fill"></i> <div><b>Modern Passenger Terminal:</b> Direct pickup and drop-off at the multi-million-pound eco-friendly terminal building.</div></li><li><i class="bi bi-check-circle-fill"></i> <div><b>Direct Motorway Access:</b> Strategically connected directly to the M27/A3(M) corridor for rapid London transfers.</div></li><li><i class="bi bi-check-circle-fill"></i> <div><b>Ferry & Cruise Operations:</b> Full service for Brittany Ferries, Condor Ferries, and boutique luxury cruise liners.</div></li>
+            </ul>
+            <div class="port-card-actions">
+              <a href="port-detail.html?port=portsmouth" class="pill-link">View Details <i class="bi bi-arrow-right"></i></a>
+              <a href="booking.html?dropoff=Portsmouth%20International%20Port,%20Hampshire" class="yellow-pill">Book Transfer <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="port-card">
+          <div class="port-card-img-wrap">
+            <span class="port-badge"><i class="bi bi-water"></i> SOUTH WEST CROSSING HUB</span>
+            <img src="assets/ports/poole-bournemouth/view-1.jpg" alt="Poole Port Transfers – Bournemouth Area" loading="lazy">
+          </div>
+          <div class="port-card-body">
+            <h3 class="port-card-title">Poole Port Transfers – Bournemouth Area</h3>
+            <div class="port-location-tag"><i class="bi bi-geo-alt-fill"></i> Poole & Bournemouth, Dorset · Jurassic Coast</div>
+            <p class="port-short-desc">Convenient door-to-door private transfers for passengers travelling through the Port of Poole and the surrounding Bournemouth & Dorset area.</p>
+            <ul class="port-highlights-list">
+              <li><i class="bi bi-check-circle-fill"></i> <div><b>Poole Harbour & Terminals:</b> Direct terminal drop-off for Brittany Ferries, Condor Ferries, and cruise berths.</div></li><li><i class="bi bi-check-circle-fill"></i> <div><b>Bournemouth Area Coverage:</b> Chauffeur pickups from luxury coastal hotels, holiday resorts, and private residences.</div></li><li><i class="bi bi-check-circle-fill"></i> <div><b>Long-Distance London Transit:</b> Comfortable private transfers connecting Dorset with Heathrow, Gatwick, and Central London.</div></li>
+            </ul>
+            <div class="port-card-actions">
+              <a href="port-detail.html?port=poole-bournemouth" class="pill-link">View Details <i class="bi bi-arrow-right"></i></a>
+              <a href="booking.html?dropoff=Port%20of%20Poole,%20Dorset" class="yellow-pill">Book Transfer <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLEET & PASSENGER GUARANTEE BAR -->
+  <section class="fleet-guarantee-bar">
+    <div class="container" style="max-width:1160px;margin:0 auto;padding:0 15px;">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+          <span style="background:rgba(208,171,0,0.25);color:#f6c400;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;text-transform:uppercase;">LUXURY SEAPORT FLEET</span>
+          <h3 style="font-size:26px;font-weight:700;color:#fff;margin:10px 0 12px;">Generous Luggage Capacity for Extended Ocean Cruises</h3>
+          <p style="color:#bbb;font-size:13.5px;line-height:1.7;margin-bottom:20px;">Whether you are embarking on a transatlantic voyage with multiple large suitcases or travelling as a family group, our fleet accommodates all luggage requirements with ease.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="fleet.html" class="pill-link" style="background:rgba(255,255,255,0.12);color:#fff;border-color:rgba(255,255,255,0.2);">Explore Full Fleet <i class="bi bi-arrow-right"></i></a>
+            <a href="booking.html" class="yellow-pill">Get Fixed Quote <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:14px;">
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(208,171,0,0.3);border-radius:10px;padding:16px;">
+              <h5 style="color:#f6c400;font-size:15px;margin-bottom:6px;"><i class="bi bi-car-front-fill"></i> Saloon &amp; Estate</h5>
+              <p style="font-size:12px;color:#aaa;margin:0;">Up to 4 passengers with 2 to 3 large cruise cases.</p>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(208,171,0,0.3);border-radius:10px;padding:16px;">
+              <h5 style="color:#f6c400;font-size:15px;margin-bottom:6px;"><i class="bi bi-people-fill"></i> MPV 5-Seater</h5>
+              <p style="font-size:12px;color:#aaa;margin:0;">Ideal for families with 4 large suitcases and hand bags.</p>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(208,171,0,0.3);border-radius:10px;padding:16px;">
+              <h5 style="color:#f6c400;font-size:15px;margin-bottom:6px;"><i class="bi bi-star-fill"></i> Executive V-Class</h5>
+              <p style="font-size:12px;color:#aaa;margin:0;">Mercedes-Benz V-Class fitting up to 7 passengers &amp; 7 bags.</p>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(208,171,0,0.3);border-radius:10px;padding:16px;">
+              <h5 style="color:#f6c400;font-size:15px;margin-bottom:6px;"><i class="bi bi-bus-front-fill"></i> 8-Seater Minivan</h5>
+              <p style="font-size:12px;color:#aaa;margin:0;">Mercedes Vito or Tourneo for 8 passengers &amp; 8 large cases.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEW & DISPATCH CTA -->
+  <section class="review-cta-section section-pad" style="background:#fffdf6;text-align:center;padding:55px 20px;border-top:1.5px solid #f0df83;border-bottom:1.5px solid #f0df83;">
+    <div style="max-width:760px;margin:0 auto;">
+      <span class="section-kicker">24/7 CHAUFFEUR DISPATCH</span>
+      <h2 style="font-size:32px;font-weight:700;margin:10px 0 8px;color:#1f2023;">Need Assistance Booking a <em>Port Transfer?</em></h2>
+      <p style="color:#666;font-size:13.5px;max-width:580px;margin:0 auto 22px;line-height:1.7;">Our dedicated dispatch team operates around the clock to assist cruise passengers and travel agents with bespoke bookings, flight connections, and vehicle allocations.</p>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:500px;margin:0 auto;">
+        <a href="tel:+442039962897" class="yellow-pill" style="font-size:13.5px;padding:12px 24px;font-weight:700;display:inline-flex;align-items:center;gap:8px;"><i class="bi bi-telephone-fill"></i> Call +44 20 3996 2897</a>
+        <a href="https://wa.me/442039962897" target="_blank" rel="noopener noreferrer" class="yellow-pill" style="font-size:13.5px;padding:12px 24px;font-weight:700;display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#ffffff;border-color:#25d366;"><i class="bi bi-whatsapp"></i> Chat on WhatsApp</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="footer">
+  <div class="footer-main">
+    <div class="footer-brand">
+      <a class="brand brand-footer" href="index.html">
+        <img class="brand-logo" src="assets/images/mlt/logo.png" alt="J Transport Group LTD">
+      </a>
+      <p>J Transport Group LTD provides 24/7 first-class airport transfer, cruise port, and chauffeur services across London and surrounding UK regions.</p>
+      <div class="socials">
+        <a href="https://www.facebook.com/share/1FKnQNM6Cb/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+        <a href="https://www.instagram.com/jtransportgroupltd?utm_source=qr&stkn=MW9oOGcxOXc4bnJlbA==" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+        <a href="https://wa.me/442039962897" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+      </div>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <a href="about.html">About Us</a>
+      <a href="services.html">Services</a>
+      <a href="ports.html">Ports</a>
+      <a href="fleet.html">Fleet</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQs</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+    </div>
+    <div>
+      <h4>Ports &amp; Harbours</h4>
+      <a href="port-detail.html?port=southampton">Southampton Cruise Port</a>
+      <a href="port-detail.html?port=dover">Port of Dover</a>
+      <a href="port-detail.html?port=tilbury">Port of Tilbury</a>
+      <a href="port-detail.html?port=portsmouth">Portsmouth International Port</a>
+      <a href="port-detail.html?port=poole-bournemouth">Poole &amp; Bournemouth Port</a>
+    </div>
+    <div>
+      <h4>Contact &amp; HQ</h4>
+      <a href="tel:+442039962897"><i class="bi bi-telephone"></i> +44 20 3996 2897</a>
+      <a href="mailto:info@jtransportgroup.com"><i class="bi bi-envelope"></i> info@jtransportgroup.com</a>
+      <p style="font-size:10.5px;color:#bbb;margin-top:6px;"><i class="bi bi-geo-alt"></i> Office 3.40, 6-9 The Square, Stockley Park, UB11 1FW</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 J Transport Group LTD. All rights reserved. · <a href="terms.html" style="color:#f6c400;text-decoration:underline;">Terms &amp; Conditions</a></span>
+    <div class="license-box">
+      Licence Holder: <b>J TRANSPORT GROUP LTD</b> · Licence Number: <b>01103601</b><br>
+      Trading at: Office 3.40, 6-9 The Square, Stockley Park, UB11 1FW<br>
+      Trading as: FCHW Chauffeur Services · Valid: 24 September 2024 to 23 September 2029
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/script.js"></script>
+<script type="module">
+  import { PORTS_DATA } from './assets/js/ports-data.js';
+
+  const grid = document.querySelector('#ports-grid');
+  if (grid) {
+    grid.innerHTML = Object.values(PORTS_DATA).map(port => `
+      <div class="port-card">
+        <div class="port-card-img-wrap">
+          <span class="port-badge"><i class="bi bi-water"></i> ${port.tag}</span>
+          <img src="${port.heroImage}" alt="${port.name}" loading="lazy">
+        </div>
+        <div class="port-card-body">
+          <h3 class="port-card-title">${port.name}</h3>
+          <div class="port-location-tag"><i class="bi bi-geo-alt-fill"></i> ${port.region}</div>
+          <p class="port-short-desc">${port.shortDesc}</p>
+          <ul class="port-highlights-list">
+            ${port.highlights.slice(0, 3).map(h => `
+              <li><i class="bi bi-check-circle-fill"></i> <div><b>${h.title}:</b> ${h.desc}</div></li>
+            `).join('')}
+          </ul>
+          <div class="port-card-actions">
+            <a href="port-detail.html?port=${port.slug}" class="pill-link">View Details <i class="bi bi-arrow-right"></i></a>
+            <a href="booking.html?dropoff=${encodeURIComponent(port.bookingQuery)}" class="yellow-pill">Book Transfer <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+[
+  {
+    "id": "christmas-day-2025",
+    "name": "Christmas Day",
+    "startDate": "2025-12-25",
+    "endDate": "2025-12-25",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "boxing-day-2025",
+    "name": "Boxing Day",
+    "startDate": "2025-12-26",
+    "endDate": "2025-12-26",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "new-years-eve-day-2025-2026",
+    "name": "New Year Celebrations",
+    "startDate": "2025-12-31",
+    "endDate": "2026-01-01",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "eid-al-fitr-2026",
+    "name": "Eid al-Fitr",
+    "startDate": "2026-03-20",
+    "endDate": "2026-03-22",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "good-friday-2026",
+    "name": "Good Friday Bank Holiday",
+    "startDate": "2026-04-03",
+    "endDate": "2026-04-03",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "easter-monday-2026",
+    "name": "Easter Monday Bank Holiday",
+    "startDate": "2026-04-06",
+    "endDate": "2026-04-06",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "early-may-bank-holiday-2026",
+    "name": "Early May Bank Holiday",
+    "startDate": "2026-05-04",
+    "endDate": "2026-05-04",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "spring-bank-holiday-2026",
+    "name": "Spring Bank Holiday",
+    "startDate": "2026-05-25",
+    "endDate": "2026-05-25",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "eid-al-adha-2026",
+    "name": "Eid al-Adha",
+    "startDate": "2026-05-27",
+    "endDate": "2026-05-29",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "summer-bank-holiday-2026",
+    "name": "Summer Bank Holiday",
+    "startDate": "2026-08-31",
+    "endDate": "2026-08-31",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "christmas-eve-2026",
+    "name": "Christmas Eve",
+    "startDate": "2026-12-24",
+    "endDate": "2026-12-24",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "christmas-day-2026",
+    "name": "Christmas Day",
+    "startDate": "2026-12-25",
+    "endDate": "2026-12-25",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "boxing-day-2026",
+    "name": "Boxing Day",
+    "startDate": "2026-12-26",
+    "endDate": "2026-12-26",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "christmas-substitute-bank-holiday-2026",
+    "name": "Christmas Substitute Bank Holiday",
+    "startDate": "2026-12-28",
+    "endDate": "2026-12-28",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "new-years-eve-2026",
+    "name": "New Year's Eve",
+    "startDate": "2026-12-31",
+    "endDate": "2026-12-31",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "new-years-day-2027",
+    "name": "New Year's Day",
+    "startDate": "2027-01-01",
+    "endDate": "2027-01-01",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "christmas-day-2027",
+    "name": "Christmas Day",
+    "startDate": "2027-12-25",
+    "endDate": "2027-12-25",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "boxing-day-2027",
+    "name": "Boxing Day",
+    "startDate": "2027-12-26",
+    "endDate": "2027-12-26",
+    "percentIncrease": 65,
+    "enabled": true
+  },
+  {
+    "id": "new-years-eve-day-2027-2028",
+    "name": "New Year Celebrations",
+    "startDate": "2027-12-31",
+    "endDate": "2028-01-01",
+    "percentIncrease": 65,
+    "enabled": true
+  }
+]

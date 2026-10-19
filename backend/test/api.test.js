@@ -40,7 +40,7 @@ function trip(extra = {}) {
   return {
     pickup: "Heathrow Airport",
     dropoff: "King's Cross",
-    pickupDate: "2026-10-15",
+    pickupDate: "2026-10-25",
     pickupTime: "10:30",
     passengers: 1,
     promo: "",

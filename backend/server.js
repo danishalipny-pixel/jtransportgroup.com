@@ -633,6 +633,18 @@ export function createApp(options = {}) {
     next();
   });
 
+  // Assets for nested routes like /ports/:slug
+  app.use("/ports/assets", express.static(path.join(siteRoot, "assets")));
+
+  // Clean ports routes
+  app.get(["/ports", "/ports/"], (_req, res) => {
+    res.sendFile(path.join(siteRoot, "ports.html"));
+  });
+
+  app.get("/ports/:slug", (_req, res) => {
+    res.sendFile(path.join(siteRoot, "port-detail.html"));
+  });
+
   // Serve frontend from the same folder
   app.use(express.static(siteRoot));
 

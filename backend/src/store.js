@@ -150,7 +150,16 @@ function buildTrip(data) {
   const distanceMiles = Number(data.distanceMiles || data.miles) || null;
   let vehicles;
   try {
-    vehicles = quoteVehicles({ pickup, dropoff, passengers, returnAt, discountPercent, distanceMiles });
+    vehicles = quoteVehicles({
+      pickup,
+      dropoff,
+      passengers,
+      returnAt,
+      discountPercent,
+      distanceMiles,
+      pickupAt,
+      pickupDate: String(data.pickupDate || "").trim(),
+    });
   } catch (error) {
     throw new HttpError(400, error.message);
   }
@@ -229,6 +238,7 @@ export function loadQuote(db, quoteId) {
         passengers: defaultTrip.passengers,
         returnAt: null,
         discountPercent: 0,
+        pickupAt: defaultTrip.pickup_at,
       });
     } catch {
       defaultVehicles = [
@@ -342,6 +352,11 @@ export function createBooking(db, data, user) {
   const reference = getNextBookingReference(db);
   const cancelToken = crypto.randomBytes(24).toString("base64url");
   const created = nowIso();
+  const isReturnBooking = (data.bookingType === 'return' || data.type === 'return') || Boolean(trip.return_at);
+  const bookingAmountPence = isReturnBooking
+    ? (vehicle.breakdown.returnTotalPence || vehicle.breakdown.totalPence)
+    : (vehicle.breakdown.oneWayTotalPence || vehicle.breakdown.totalPence);
+
   db.prepare(
     `INSERT INTO bookings (
       id, reference, user_id, quote_id, vehicle_code, vehicle_name, amount_pence, currency, status,
@@ -355,7 +370,7 @@ export function createBooking(db, data, user) {
     quote.id,
     vehicle.code,
     vehicle.name,
-    vehicle.breakdown.totalPence,
+    bookingAmountPence,
     data.name.trim(),
     data.email.trim().toLowerCase(),
     data.phone.trim(),

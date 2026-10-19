@@ -23,3 +23,10 @@ npm-debug.log*
 .DS_Store
 .vscode/
 .pytest_cache/
+
+# Temporary files and backups
+*.bak
+*.backup
+scratch/
+website-before-changes/
+website-after-changes/

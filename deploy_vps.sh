@@ -47,7 +47,7 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=jtransportgroup.ltd@gmail.com
 SMTP_PASS=
-COMPANY_EMAIL=jtransportgroup.ltd@gmail.com
+COMPANY_EMAIL=info@jtransportgroup.com
 EOF
   echo "    --> Created .env template at /var/www/jtransportgroup/.env"
 fi
