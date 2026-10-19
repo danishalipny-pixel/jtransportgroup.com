@@ -18,8 +18,9 @@ sudo chown -R $USER:$USER /var/www/jtransportgroup
 cd /var/www/jtransportgroup
 
 if [ ! -d ".git" ]; then
-  git clone https://github.com/danishalipny-pixel/J-TransportGroup.git .
+  git clone https://github.com/danishalipny-pixel/jtransportgroup.com.git .
 else
+  git remote set-url origin https://github.com/danishalipny-pixel/jtransportgroup.com.git
   git fetch origin main
   git reset --hard origin/main
 fi
