@@ -1,0 +1,15 @@
+# robots.txt for https://jtransportgroup.com
+# Generated for J Transport Group LTD
+
+User-agent: *
+Allow: /
+
+# Disallow private user accounts and checkout/payment flow
+Disallow: /api/
+Disallow: /account.html
+Disallow: /checkout.html
+Disallow: /payment-success.html
+Disallow: /payment-cancelled.html
+
+# XML Sitemap reference
+Sitemap: https://jtransportgroup.com/sitemap.xml
